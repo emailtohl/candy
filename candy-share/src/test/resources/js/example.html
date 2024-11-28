@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8">
+    <title>JavaScript与Java端RSA加解密示例</title>
+    <style>
+      .row {
+        display:block;
+        margin-top: 10px;
+      }
+      p.black-box {
+        width: 750px;
+        border: solid;
+        word-wrap: break-word;
+        white-space: pre-wrap
+      }
+      .hide {
+        display: none;
+      }
+    </style>
+    <script src="crypto-js.js"></script>
+    <script src="jsencrypt.js"></script>
+    <script src="cipher.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <label>选择RSA的加解密实现</label>
+      <select id="selectBtn">
+        <option value="1">JDK加密标准</option>
+        <option value="2">我的加密实现</option>
+      </select>
+    </div>
+    <form>
+      <div class="row">
+        <label class="row"></label>
+        <textarea rows="5" cols="100" class="row" id="pubKey"></textarea>
+      </div>
+      <div class="row">
+        <label class="row"><strong>明文</strong></label>
+        <textarea rows="5" cols="100" class="row" id="plaintext"></textarea>
+      </div>
+      <div class="row">
+        <input type="button" value="验签" id="verifyBtn" class="sign">
+        <input type="button" value="加密" id="encryptBtn">
+      </div>
+    </form>
+
+    <p class="sign"><strong>验签结果</strong></p>
+    <p id="verify-result" class="black-box sign"></p>
+    <p><strong>密文</strong></p>
+    <p id="ciphertext" class="black-box"></p>
+
+
+    <div class="row">
+      <label class="row"></label>
+      <textarea rows="5" cols="100" class="row" id="priKey"></textarea>
+    </div>
+    <div class="row">
+      <input type="button" value="签名" id="signBtn" class="sign">
+      <input type="button" value="解密" id="decryptBtn">
+    </div>
+
+    <p class="sign"><strong>签名</strong></p>
+    <p id="signCode" class="black-box sign"></p>
+    <p><strong>解密</strong></p>
+    <p id="decrypted-text" class="black-box"></p>
+    <script>
+      window.onload = function () {
+        const selectBtn = document.querySelector('#selectBtn');
+        const pubKeyEle = document.querySelector('#pubKey');
+        const priKeyEle = document.querySelector('#priKey');
+        const plaintextEle = document.querySelector('#plaintext');
+        const ciphertextEle = document.querySelector('#ciphertext');
+        const encryptBtn = document.querySelector('#encryptBtn');
+        const decryptBtn = document.querySelector('#decryptBtn');
+        const decryptedText = document.querySelector('#decrypted-text');
+
+        const signBtn = document.querySelector('#signBtn');
+        const verifyBtn = document.querySelector('#verifyBtn');
+        const signCode = document.querySelector('#signCode');
+        const verifyResult = document.querySelector('#verify-result');
+
+        const pubKeyX509 = 'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKtWCTVEovAWCNBJq2fODB3Hvct0x3bJbfHDFCAcQaXBGM7mPDbHveoZeIaxErp4VvQWgyU4kg/5SoSAooB5cN8CAwEAAQ==';
+        const priKeyPKCS8 = 'MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAq1YJNUSi8BYI0EmrZ84MHce9y3THdslt8cMUIBxBpcEYzuY8Nse96hl4hrESunhW9BaDJTiSD/lKhICigHlw3wIDAQABAkEAlfgUzz9or2VaCZayJYZBLL/s7O0mul7NkVQDhae1/nJ1mMj5tFa0PZHyMoA3cV7K69BTJA3UFbJf9CU3rtDtwQIhAPtU9ebiWFsa7GPbUZj9CYbRzI2+M0kfTmwjv0n4l5BJAiEAroS1kyjXYgE4ZjXeEMmPvyVl+KreHpBsFGIyKhUiR+cCIFVW4uxT3OaKfMvnU4ycFtkFceyLMcTZcXp8pN5MH8KpAiAlnQq5fer1/4dVWDTVb2vg6cGRl9opwjzZI9TmBwoNbwIhAK/p+2V1gs3FXJhF83MjBnGmrAf25q+3Kt9NcMTt1nMs';
+        const pubKeyMyImpl = 'Mjg0MjE4NzYxNTYwOTY5ODQ4MDk3Mjc5NzgxNTY5NjUyNTQwMDg0Nzg4NTUzNTQ3NDY4Mzc1NTY2MjQ3MTQ1MDIyMTU4MTM1NjMyMTAyNDA5NTQ4NzAyNzg5Mjk1NzMxMTg0MDgyNzA4NTcxMjUxNTIwNjI1MTQ3NzI5OTAzNzI3MTkxNjAxNzkyNzQ0NDI0OTMxNzMxMTM1MjM2MzI5MDgzNjU1NDkxNjEyNzYwNTYzNzMyMDI1MzY4NDU5MDQ2NTA5MjM1NjEyNjc0MTk5NjE5MjU5MDkyMDA1NTU3ODM3ODEzMDQ4ODI5NDY4NTQ1MTU4OTA0MTA2ODY5Mjg4MjUzMzEzNTg5NTA5MDkwMzUwMDg1NDUyNDc1OTQ1MzEwNjY4OTA1MTM2MjU0NTY3MzUzMDcxMTA5MzU1OTc0NTk4NjEwNzQzNTY1Mzk5NjQyMzA4MDE3NzY5NzY1MDQ0OTA5NDcyNTcxOTUxODQ5MjM0MjQ5ODM1NjE3ODg5MDA2NDI1NDAwMzU0NTg1Njc3MzMzOTk0MTk1MDM3MDA0NjczODUwMzA5MzU0MTQzNjA3MTYzNTYxNTIwMTEzMzI5NDE2OTI4NjMyOTgyOTMwMjAwMTczNzIxMDU2ODE4NTk4Mjk2ODYyMDUzNzUyNjI1NzEzMjY3Nzc3NDc3MzcyODU1MjkyODkxMzU1NDg1MzM4NzA5NDIxMDg0OTM0OTc5ODU2MzIwNjI3NTU1ODQ5MTIyNDE1NzY1MTg3OTM0NTQ0NTUyOTA2NzgyOTY5NDI1NjUxMjAwNzIwNDYxODcyMjYwMjA1MjAyNjM=,MjA1NTYyODAxMTM1MDgzNTUyNzk5MzUwOTI2MTM5NDU2MDM4NTczOTE5NzMxNDIxMTgxOTQzMDUyNjI4NTEwMjE2MzcwODM4Mjg5MjM1OTE1NzgyMDU0NTk4MzU4NDQ4Nzg2NTcxMjU1NzIyMzc1NDgzNzM2MzkzMjE5MDU4NDk2MjUyMjIyNzg5ODE0Njk2MTUyNzY5NTE2NjEyMDIwNjY4NzEwMzUxNDQxODU0OTkzNjgxNDAxMzgzNDE2MzcyNTAwMDgwMzgyNjk2MTQyMDU2NDM5NTgzMTUyNDcwMjMwNzQ1MDUyNjM0NjQ2MjE1NzMzNTg2NDQyMjQ3OTU1NTU0OTg1MTg2MTE5NzYyNjE2NDQ2NDQxNjY0NDAwMzgwMzMwMjg4Mjg2ODk4NDkyMzQwNzQ1MDg1NjY0MTg3NjA4NjMyMTgyNTk3OTMyNjA5Mzg0NjI4NTg0MTE1NzE0NTQ2MTQ4MDg0MDk3NzM1MjUyMTg2MjkxNzg2ODA0OTYzNDM2NDY4NjA3NTI5OTk0MTUwNjEwOTMyNTA3Njg0OTM2MDU3NzQ1NzQyMjAxNzA4NzYyNzA5ODA0NDUyMDUyMTk3MTI3MjgxMzIxNzU4MjEyMDk5NjgwNDk0ODc3MjkwMzY1MDI3MTg2OTA4NDQ1MDcyMDk2MDY1MjI4NzQ5Mjk4MDIzOTQ1MTYyNDY3NjkzMDE4NzQ4NjI4NTgwNTI2ODI2NTExNDY3NTA1NTA0NTA1MTIxNTk5OTIxNzY1NzQ4MDYwODUwOTA3OTg0NjgwNjM5NDc3NjE5MjQ3NTI1MjkyOTE0MjQzMw==';
+        const priKeyMyImpl = 'Mjg0MjE4NzYxNTYwOTY5ODQ4MDk3Mjc5NzgxNTY5NjUyNTQwMDg0Nzg4NTUzNTQ3NDY4Mzc1NTY2MjQ3MTQ1MDIyMTU4MTM1NjMyMTAyNDA5NTQ4NzAyNzg5Mjk1NzMxMTg0MDgyNzA4NTcxMjUxNTIwNjI1MTQ3NzI5OTAzNzI3MTkxNjAxNzkyNzQ0NDI0OTMxNzMxMTM1MjM2MzI5MDgzNjU1NDkxNjEyNzYwNTYzNzMyMDI1MzY4NDU5MDQ2NTA5MjM1NjEyNjc0MTk5NjE5MjU5MDkyMDA1NTU3ODM3ODEzMDQ4ODI5NDY4NTQ1MTU4OTA0MTA2ODY5Mjg4MjUzMzEzNTg5NTA5MDkwMzUwMDg1NDUyNDc1OTQ1MzEwNjY4OTA1MTM2MjU0NTY3MzUzMDcxMTA5MzU1OTc0NTk4NjEwNzQzNTY1Mzk5NjQyMzA4MDE3NzY5NzY1MDQ0OTA5NDcyNTcxOTUxODQ5MjM0MjQ5ODM1NjE3ODg5MDA2NDI1NDAwMzU0NTg1Njc3MzMzOTk0MTk1MDM3MDA0NjczODUwMzA5MzU0MTQzNjA3MTYzNTYxNTIwMTEzMzI5NDE2OTI4NjMyOTgyOTMwMjAwMTczNzIxMDU2ODE4NTk4Mjk2ODYyMDUzNzUyNjI1NzEzMjY3Nzc3NDc3MzcyODU1MjkyODkxMzU1NDg1MzM4NzA5NDIxMDg0OTM0OTc5ODU2MzIwNjI3NTU1ODQ5MTIyNDE1NzY1MTg3OTM0NTQ0NTUyOTA2NzgyOTY5NDI1NjUxMjAwNzIwNDYxODcyMjYwMjA1MjAyNjM=,NjU1Mzc=';
+
+        plaintextEle.textContent = "豫章故郡，洪都新府。星分翼轸，地接衡庐。襟三江而带五湖，控蛮荆而引瓯越。物华天宝，龙光射牛斗之墟；人杰地灵，徐孺下陈蕃之榻。雄州雾列，俊采星驰。台隍枕夷夏之交，宾主尽东南之美。都督阎公之雅望，棨戟遥临；宇文新州之懿范，襜帷暂驻。十旬休假，胜友如云；千里逢迎，高朋满座。腾蛟起凤，孟学士之词宗；紫电青霜，王将军之武库。家君作宰，路出名区；童子何知，躬逢胜饯。\n"
+          + "时维九月，序属三秋。潦水尽而寒潭清，烟光凝而暮山紫。俨骖騑于上路，访风景于崇阿；临帝子之长洲，得天人之旧馆。层峦耸翠，上出重霄；飞阁流丹，下临无地。鹤汀凫渚，穷岛屿之萦回；桂殿兰宫，即冈峦之体势。\n"
+          + "披绣闼，俯雕甍，山原旷其盈视，川泽纡其骇瞩。闾阎扑地，钟鸣鼎食之家；舸舰迷津，青雀黄龙之舳。云销雨霁，彩彻区明。落霞与孤鹜齐飞，秋水共长天一色。渔舟唱晚，响穷彭蠡之滨；雁阵惊寒，声断衡阳之浦。\n"
+          + "遥襟甫畅，逸兴遄飞。爽籁发而清风生，纤歌凝而白云遏。睢园绿竹，气凌彭泽之樽；邺水朱华，光照临川之笔。四美具，二难并。穷睇眄于中天，极娱游于暇日。天高地迥，觉宇宙之无穷；兴尽悲来，识盈虚之有数。望长安于日下，目吴会于云间。地势极而南溟深，天柱高而北辰远。关山难越，谁悲失路之人？萍水相逢，尽是他乡之客。怀帝阍而不见，奉宣室以何年？\n"
+          + "嗟乎！时运不齐，命途多舛。冯唐易老，李广难封。屈贾谊于长沙，非无圣主；窜梁鸿于海曲，岂乏明时？所赖君子见机，达人知命。老当益壮，宁移白首之心？穷且益坚，不坠青云之志。酌贪泉而觉爽，处涸辙以犹欢。北海虽赊，扶摇可接；东隅已逝，桑榆非晚。孟尝高洁，空余报国之情；阮籍猖狂，岂效穷途之哭！\n"
+          + "勃，三尺微命，一介书生。无路请缨，等终军之弱冠；有怀投笔，慕宗悫之长风。舍簪笏于百龄，奉晨昏于万里。非谢家之宝树，接孟氏之芳邻。他日趋庭，叨陪鲤对；今兹捧袂，喜托龙门。杨意不逢，抚凌云而自惜；钟期既遇，奏流水以何惭？\n"
+          + "呜乎！胜地不常，盛筵难再；兰亭已矣，梓泽丘墟。临别赠言，幸承恩于伟饯；登高作赋，是所望于群公。敢竭鄙怀，恭疏短引；一言均赋，四韵俱成。请洒潘江，各倾陆海云尔：\n"
+          + "滕王高阁临江渚，佩玉鸣鸾罢歌舞。\n"
+          + "画栋朝飞南浦云，珠帘暮卷西山雨。\n"
+          + "闲云潭影日悠悠，物换星移几度秋。\n"
+          + "阁中帝子今何在？槛外长江空自流。";
+          
+        function changeEncryptImplement() {
+          ciphertextEle.textContent = '';
+          decryptedText.textContent = '';
+          if (selectBtn.value == '1') {
+            pubKeyEle.value = pubKeyX509;
+            pubKeyEle.previousElementSibling.textContent = '来自于Java端JdkCipher.getEncodedRSAKeyPair返回的公钥，遵循X509编码';
+            priKeyEle.value = priKeyPKCS8;
+            priKeyEle.previousElementSibling.textContent = '来自于Java端JdkCipher.getEncodedRSAKeyPair返回的私钥，遵循PKCS8编码';
+            signShow();
+          } else {
+            pubKeyEle.value = pubKeyMyImpl;
+            pubKeyEle.previousElementSibling.textContent = '来自于Java端RSACipher.getKeys返回的公钥';
+            priKeyEle.value = priKeyMyImpl;
+            priKeyEle.previousElementSibling.textContent = '来自于Java端RSACipher.getKeys返回的私钥';
+            signHide();
+          }
+        }
+        selectBtn.value = '2';
+        changeEncryptImplement();
+        selectBtn.addEventListener('change', changeEncryptImplement);
+        
+        encryptBtn.addEventListener('click', function () {
+          var ciphertext;
+          if (selectBtn.value == '1') {
+            ciphertext = JDKCipher.RSAEncrypt(plaintextEle.value, pubKeyEle.value);
+          } else {
+            ciphertext = RSACipher.RSAEncrypt(plaintextEle.value, pubKeyEle.value);
+          }
+          ciphertextEle.textContent = ciphertext;
+        });
+
+        decryptBtn.addEventListener('click', function () {
+          if (!ciphertextEle.textContent) {
+            return;
+          }
+          var ciphertext;
+          if (selectBtn.value == '1') {
+            ciphertext = JDKCipher.RSADecrypt(ciphertextEle.textContent, priKeyEle.value);
+          } else {
+            ciphertext = RSACipher.RSADecrypt(ciphertextEle.textContent, priKeyEle.value);
+          }
+          decryptedText.textContent = ciphertext;
+        });
+
+        signBtn.addEventListener('click', function() {
+          if (!decryptedText.textContent || !priKeyEle.value) {
+            return;
+          }
+          signCode.textContent = JDKCipher.signSHA256withRSA(decryptedText.textContent, priKeyEle.value);
+        });
+        verifyBtn.addEventListener('click', function() {
+          if (!decryptedText.textContent || !signCode.textContent || !pubKeyEle.value) {
+            return;
+          }
+          verifyResult.textContent = JDKCipher.verifySHA256withRSA(decryptedText.textContent, signCode.textContent, pubKeyEle.value);
+        });
+
+        function signShow() {
+          const signElements = document.querySelectorAll('.sign');
+          for (var ele of signElements) {
+            ele.classList.remove('hide');
+          }
+        }
+        function signHide() {
+          const signElements = document.querySelectorAll('.sign');
+          for (var ele of signElements) {
+            ele.classList.add('hide');
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

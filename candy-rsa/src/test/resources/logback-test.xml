@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://logback.qos.ch/manual/appenders.html -->
+<configuration>
+  <property name="PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} %line [%X{tid}] - %msg%n"/>
+  <property name="ENCODING" value="UTF-8"/>
+  <property name="FILENAME" value="../logs/kit.log"/>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <Pattern>${PATTERN}</Pattern>
+      <charset>${ENCODING}</charset>
+    </encoder>
+  </appender>
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${FILENAME}</file>
+    <append>true</append>
+    <!-- set immediateFlush to false for much higher logging throughput -->
+    <immediateFlush>true</immediateFlush>
+    <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <pattern>${PATTERN}</pattern>
+      <charset>${ENCODING}</charset>
+    </encoder>
+    <!-- 异步日志若要打印行号，则需开启此配置为true-->
+    <!-- <includeCallerData>true</includeCallerData>-->
+  </appender>
+
+  <!-- hibernate 配置 -->
+  <logger name="org.hibernate.orm.jdbc" level="TRACE">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <root level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </root>
+</configuration>
