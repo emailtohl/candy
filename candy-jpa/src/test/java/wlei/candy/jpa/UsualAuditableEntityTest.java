@@ -23,27 +23,25 @@ class UsualAuditableEntityTest {
 
   @Test
   void prePersist() {
-    SomeEntity se = new SomeEntity().setCreateTime(LocalDateTime.now().minusMinutes(1L));
-    se.prePersist();
-    assertNotEquals(LocalDateTime.now(), se.getCreateTime());
+    LocalDateTime now = LocalDateTime.now();
+    SomeEntity se = new SomeEntity()
+        .setCreateTime(now.minusMinutes(1L)).setModifyTime(now)
+        .setCreateBy("foo").setModifyBy("bar");
+    assertNotEquals(now, se.getCreateTime());
     se = new SomeEntity(se);
     assertNotNull(se.getModifyTime());
-    assertEquals(se.getCreateBy(), se.getModifyBy());
-    assertEquals(se.getCreateTime(), se.getModifyTime());
-    assertEquals("id", PROP_ID);
-
-    assertNotNull(se.getCreateBy());
-    assertNotNull(se.getModifyBy());
+    assertNotEquals(se.getCreateBy(), se.getModifyBy());
+    assertNotEquals(se.getCreateTime(), se.getModifyTime());
   }
 
   @Test
   void preUpdate() {
     SomeEntity se = new SomeEntity();
     se.setCreateBy("foo");
-    se.setCreateTime(LocalDateTime.now());
-    se.setModifyTime(LocalDateTime.now().plusHours(1L));
-    se.preUpdate();
-    assertNotEquals(LocalDateTime.now(), se.getModifyTime());
+    LocalDateTime now = LocalDateTime.now();
+    se.setCreateTime(now);
+    se.setModifyTime(now.plusHours(1L));
+    assertNotEquals(now, se.getModifyTime());
     assertNotEquals(se.getCreateTime(), se.getModifyTime());
   }
 

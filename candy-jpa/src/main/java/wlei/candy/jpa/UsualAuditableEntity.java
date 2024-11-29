@@ -5,6 +5,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.util.StringUtils;
 import wlei.candy.share.current.CurrentUserInfoFactory;
 
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @Audited
 @MappedSuperclass
 public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends UsualEntity<A> implements Auditability<Long, A> {
+  @NotAudited
   @Column(nullable = false, updatable = false)
   private String createBy;
 
@@ -96,7 +98,7 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
    * 保存前处理
    */
   @PrePersist
-  void prePersist() {
+  void beforeCreate() {
     if (getModifyTime() == null) {
       if (getCreateTime() != null) {
         setModifyTime(getCreateTime());
@@ -116,7 +118,7 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
    * 更新前处理
    */
   @PreUpdate
-  void preUpdate() {
+  void beforeUpdate() {
     if (getModifyTime() == null) {
       setModifyTime(LocalDateTime.now());
     }

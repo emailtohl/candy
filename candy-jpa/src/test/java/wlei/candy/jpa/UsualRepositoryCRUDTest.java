@@ -24,6 +24,7 @@ import wlei.candy.share.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -83,7 +84,7 @@ class UsualRepositoryCRUDTest {
    */
   @Test
   void read() {
-    BiFunction<CriteriaBuilder, Root<Item>, List<Predicate>> supplement = (b, r) -> Collections.singletonList(b.lessThan(r.get(Item.PROP_CREATE_TIME), new Date(System.currentTimeMillis() + 10000)));
+    BiFunction<CriteriaBuilder, Root<Item>, List<Predicate>> supplement = (b, r) -> Collections.singletonList(b.greaterThan(r.get(Item.PROP_CREATE_TIME), LocalDateTime.now().minusMinutes(1L)));
     Optional<Item> o = tx.exec(() -> itemRepo.get(id));
     assertTrue(o.isPresent());
 

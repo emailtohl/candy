@@ -82,9 +82,10 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
 
   /**
    * 保存前处理
+   * final修饰符，保证不被子类覆盖，否则确实创建时间
    */
   @PrePersist
-  void prePersist() {
+  final void prePersist() {
     if (getCreateTime() == null) {
       setCreateTime(LocalDateTime.now());
     }
