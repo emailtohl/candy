@@ -3,24 +3,15 @@ package wlei.candy.jpa.auction.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-import wlei.candy.jpa.UsualAuditableEntity;
+import wlei.candy.jpa.UsualEntity;
 
 import java.math.BigDecimal;
 
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"})
-@Indexed
-@Audited
 @Table(name = "AUCTION_BID")
 @Entity
-public class Bid extends UsualAuditableEntity<Bid> {
+public class Bid extends UsualEntity<Bid> {
 
-  @KeywordField
   protected String name;
 
   @NotNull
@@ -28,8 +19,6 @@ public class Bid extends UsualAuditableEntity<Bid> {
   @JoinColumn(foreignKey = @ForeignKey(name = "FK_BID_ITEM_ID"))
   protected Item item;
 
-  @IndexedEmbedded
-  @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(foreignKey = @ForeignKey(name = "FK_BID_BIDDER_ID"))
   protected Participator bidder;

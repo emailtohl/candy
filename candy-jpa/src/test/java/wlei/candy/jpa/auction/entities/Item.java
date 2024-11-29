@@ -4,14 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.springframework.format.annotation.DateTimeFormat;
-import wlei.candy.jpa.UsualAuditableEntity;
+import wlei.candy.jpa.UsualEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -21,14 +15,11 @@ import java.util.Set;
 import static wlei.candy.share.util.DateUtil.GMT_8;
 import static wlei.candy.share.util.DateUtil.TIME_PATTERN;
 
-@Indexed
-@Audited
 @Table(name = "AUCTION_ITEM")
 @Entity
-public class Item extends UsualAuditableEntity<Item> {
+public class Item extends UsualEntity<Item> {
 
   @NotNull
-  @FullTextField
   @Column(unique = true)
   protected String name;
 
@@ -45,8 +36,6 @@ public class Item extends UsualAuditableEntity<Item> {
 
   protected BigDecimal buyNowPrice;
 
-  @IndexedEmbedded
-  @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(foreignKey = @ForeignKey(name = "FK_ITEM_SELLER_ID"))
   protected Participator seller;
@@ -56,7 +45,6 @@ public class Item extends UsualAuditableEntity<Item> {
   protected Set<Category> categories = new HashSet<>();
 
   @JsonBackReference("bids")
-  @IndexedEmbedded
   @OneToMany(mappedBy = "item")
   protected Set<Bid> bids = new HashSet<>();
 
@@ -64,7 +52,6 @@ public class Item extends UsualAuditableEntity<Item> {
   @JoinTable(name = "AUCTION_ITEM_IMAGES", joinColumns = @JoinColumn(foreignKey = @ForeignKey(name = "FK_ITEM_IMAGES_ITEM_ID")))
   protected Set<Image> images = new HashSet<>();
 
-  @FullTextField
   protected String description;
 
   public Item() {

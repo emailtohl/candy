@@ -5,9 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.envers.Audited;
 
-@Audited
 @Table(name = "AUCTION_CREDIT_CARD")
 @Entity
 @PrimaryKeyJoinColumn(name = "CREDITCARD_ID")

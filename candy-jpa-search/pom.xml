@@ -25,6 +25,7 @@
       <artifactId>candy-jpa</artifactId>
       <version>${candy.version}</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>com.github.emailtohl</groupId>
       <artifactId>candy-jpa</artifactId>
@@ -32,6 +33,7 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.hibernate.search</groupId>
       <artifactId>hibernate-search-mapper-orm</artifactId>

@@ -1,9 +1,9 @@
 package wlei.candy.jpa;
 
 import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
 import org.junit.jupiter.api.Test;
 import wlei.candy.jpa.auction.entities.Item;
-import wlei.candy.jpa.matches.entities.TempRecord;
 
 import java.util.Optional;
 import java.util.Set;
@@ -96,5 +96,23 @@ class AttributeFactoryTest {
     Optional<AccessType> o = AttributeFactory.findAccessTypeByProperty(TempRecord.class);
     assertTrue(o.isPresent());
     assertEquals(AccessType.PROPERTY, o.get());
+  }
+
+  /**
+   * Author: HeLei
+   * Date: 2024/11/28
+   */
+  public static class TempRecord extends BeanEntity<TempRecord> {
+    private int recordType;
+
+    @Column(nullable = false)
+    public int getRecordType() {
+      return recordType;
+    }
+
+    public TempRecord setRecordType(int recordType) {
+      this.recordType = recordType;
+      return this;
+    }
   }
 }

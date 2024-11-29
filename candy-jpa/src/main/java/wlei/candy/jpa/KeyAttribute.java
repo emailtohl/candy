@@ -44,7 +44,7 @@ public class KeyAttribute {
    * @param entity 实体
    * @return 分析结果
    */
-  static <I extends Serializable, E extends GenericEntity<I, E>> KeyAttribute[] parse(E entity) {
+  public static <I extends Serializable, E extends GenericEntity<I, E>> KeyAttribute[] parse(E entity) {
     List<KeyAttribute> result = new ArrayList<>();
     for (Attribute attribute : AttributeFactory.parse(entity.getClass())) {
       Column column = attribute.getAnnotation(Column.class);

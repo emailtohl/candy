@@ -1,4 +1,6 @@
-package wlei.candy.jpa;
+package wlei.candy.jpa.envers;
+
+import wlei.candy.jpa.GenericEntity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

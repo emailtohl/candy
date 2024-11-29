@@ -3,17 +3,15 @@ package wlei.candy.jpa.auction.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.envers.Audited;
-import wlei.candy.jpa.UsualAuditableEntity;
+import wlei.candy.jpa.UsualEntity;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"})
-@Audited
 @Table(name = "AUCTION_CATEGORY")
 @Entity
-public class Category extends UsualAuditableEntity<Category> {
+public class Category extends UsualEntity<Category> {
 
   @NotNull
   protected String name;

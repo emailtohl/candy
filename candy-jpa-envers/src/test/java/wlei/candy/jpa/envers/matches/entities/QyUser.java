@@ -1,10 +1,11 @@
-package wlei.candy.jpa.envers.matches.matches.entities;
+package wlei.candy.jpa.envers.matches.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.util.StringUtils;
+import wlei.candy.jpa.UsualEntity;
 
 import java.util.Objects;
 

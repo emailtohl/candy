@@ -7,6 +7,7 @@ import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import wlei.candy.jpa.GenericEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -3,9 +3,7 @@ package wlei.candy.jpa.auction.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.envers.Audited;
 
-@Audited
 @Table(name = "AUCTION_BANK_ACCOUNT")
 @Entity
 public class BankAccount extends BillingDetails<BankAccount> {

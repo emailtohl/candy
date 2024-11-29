@@ -3,7 +3,6 @@ package wlei.candy.jpa;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.hibernate.envers.RevisionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.StringUtils;
-import wlei.candy.jpa.auction.entities.AuctionType;
 import wlei.candy.jpa.auction.entities.Item;
 import wlei.candy.jpa.auction.repo.ItemRepo;
 import wlei.candy.jpa.cache.CacheService;
@@ -53,7 +50,7 @@ class UsualRepositoryCRUDTest {
     Item item = new Item();
     name = String.valueOf(new Random().nextLong());
     item.setName(name);
-    item.setSeller(data.seller);
+    item.setSeller(data.getSeller());
     item.setAuctionEnd(plusNow(5));
     item.setBuyNowPrice(new BigDecimal(100));
     id = tx.exec(() -> itemRepo.add(item)).getId();
@@ -65,18 +62,6 @@ class UsualRepositoryCRUDTest {
       itemRepo.delete(id);
       return null;
     });
-    // 测试审计历史版本的功能
-    List<RevTuple<Long, Item, Item>> revisions = tx.exec(() -> itemRepo.getRevisions(id));
-    assertFalse(revisions.isEmpty());
-    assertTrue(StringUtils.hasText(revisions.iterator().next().getEntity().getModifyBy()));
-    assertNotNull(revisions.iterator().next().getEntity().getModifyTime());
-    long count = revisions.size();
-    assertTrue(count > 1);
-
-    // 删除版本
-    RevTuple<Long, Item, Item> delRev = revisions.stream().filter(rev -> rev.getRevisionType() == RevisionType.DEL).findFirst().orElseThrow(AssertionError::new);
-    // 即便是删除的版本，也需要保留其对象初始化时的约束，例如auctionType不能为空
-    assertEquals(AuctionType.HIGHEST_BID, delRev.getEntity().getAuctionType());
   }
 
   /**
@@ -124,7 +109,7 @@ class UsualRepositoryCRUDTest {
       assertTrue(count > 0);
       return count;
     });
-    Item item = cacheService.get(Item.class, data.item.getId());
+    Item item = cacheService.get(Item.class, data.getItem().getId());
     assertEquals("desc 5", item.getDescription());
   }
 
@@ -132,7 +117,7 @@ class UsualRepositoryCRUDTest {
   void delete() {
     Item i = new Item();
     i.setName("foo_bar");
-    i.setSeller(data.seller);
+    i.setSeller(data.getSeller());
     tx.exec(() -> itemRepo.add(i));
     int count = tx.exec(() -> itemRepo.delete(new QueryParameters().add("name", "foo_bar")));
     assertTrue(count > 0);

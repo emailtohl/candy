@@ -8,10 +8,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import wlei.candy.jpa.*;
-import wlei.candy.jpa.auction.entities.Item;
-import wlei.candy.jpa.auction.repo.ItemRepo;
-import wlei.candy.jpa.auction.repo.ParticipatorRepo;
+import wlei.candy.jpa.KeyAttribute;
+import wlei.candy.jpa.QueryParameters;
+import wlei.candy.jpa.search.auction.entities.Item;
+import wlei.candy.jpa.search.auction.repo.ItemRepo;
+import wlei.candy.jpa.search.auction.repo.ParticipatorRepo;
 import wlei.candy.jpa.tx.TxService;
 
 import java.util.List;

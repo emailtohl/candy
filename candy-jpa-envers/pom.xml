@@ -20,6 +20,7 @@
       <artifactId>candy-jpa</artifactId>
       <version>${candy.version}</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>com.github.emailtohl</groupId>
       <artifactId>candy-jpa</artifactId>
@@ -27,6 +28,7 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-envers</artifactId>
@@ -126,11 +128,6 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-envers</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

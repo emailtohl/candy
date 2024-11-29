@@ -3,6 +3,7 @@ package wlei.candy.jpa.envers;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.envers.RevisionType;
 import org.springframework.format.annotation.DateTimeFormat;
+import wlei.candy.jpa.GenericEntity;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;

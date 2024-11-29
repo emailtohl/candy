@@ -5,14 +5,12 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.envers.Audited;
-import wlei.candy.jpa.UsualAuditableEntity;
+import wlei.candy.jpa.UsualEntity;
 
-@Audited
 @Table(name = "AUCTION_BILLING_DETAILS")
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class BillingDetails<T extends BillingDetails<T>> extends UsualAuditableEntity<T> {
+public class BillingDetails<T extends BillingDetails<T>> extends UsualEntity<T> {
 
   @NotNull
   protected String owner;

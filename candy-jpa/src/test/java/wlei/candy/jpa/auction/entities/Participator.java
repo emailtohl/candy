@@ -6,24 +6,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.envers.Audited;
-import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import wlei.candy.jpa.UsualAuditableEntity;
+import wlei.candy.jpa.UsualEntity;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler", "fieldHandler"})
-@Indexed
-@Audited
 @Table(name = "AUCTION_PARTICIPATOR")
 @Entity
-public class Participator extends UsualAuditableEntity<Participator> {
+public class Participator extends UsualEntity<Participator> {
 
-  @GenericField(sortable = Sortable.YES)
   @NotNull
   protected String name;
 
@@ -31,7 +23,6 @@ public class Participator extends UsualAuditableEntity<Participator> {
 
   protected Address homeAddress;
 
-  @FullTextField
   protected String remark;
 
   @JoinTable(name = "AUCTION_PARTICIPATOR_LOGIN_NAMES")

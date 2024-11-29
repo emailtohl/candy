@@ -97,7 +97,7 @@ class SpringConf {
   private Map<String, Object> jpaConf() {
     Map<String, Object> properties = new HashMap<>();
     properties.put("hibernate.use_sql_comments", "true");
-    properties.put("hibernate.hbm2ddl.auto", "create");
+    properties.put("hibernate.hbm2ddl.auto", "create-drop");
     // 测试时打印的参数通过log4j2-test.xml生效
     properties.put("hibernate.show_sql", "false");
     properties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());

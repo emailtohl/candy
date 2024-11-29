@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import wlei.candy.jpa.event.EntityStateEventPublisher;
 import wlei.candy.jpa.namingstrategy.SpringImplicitNamingStrategy;
 import wlei.candy.jpa.namingstrategy.SpringPhysicalNamingStrategy;
+import wlei.candy.jpa.tx.TxService;
+import wlei.candy.jpa.tx.TxServiceImpl;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ import java.util.Objects;
 @ComponentScan
 @EnableTransactionManagement
 @EnableCaching
-@EnableJpaRepositories(basePackages = {"wlei.candy.jpa.matches.repo", "wlei.candy.jpa.auction.repo"},
+@EnableJpaRepositories(basePackages = {"wlei.candy.jpa.search.auction.repo"},
     repositoryImplementationPostfix = "ExtImpl",
     transactionManagerRef = "annotationDrivenTransactionManager",
     entityManagerFactoryRef = "entityManagerFactory")
@@ -88,7 +90,7 @@ class SpringConf {
     emfb.setDataSource(dataSource);
     emfb.setJpaVendorAdapter(jpaVendorAdapter);
     // 实际上hibernate可以扫描类路径下有JPA注解的实体类，但是JPA规范并没有此功能，所以最好还是告诉它实际所在位置
-    emfb.setPackagesToScan("wlei.candy.jpa.matches.entities", "wlei.candy.jpa.auction.entities");
+    emfb.setPackagesToScan("wlei.candy.jpa.search.auction.entities");
     Map<String, Object> properties = jpaConf();
     emfb.setJpaPropertyMap(properties);
     return emfb;
@@ -97,7 +99,7 @@ class SpringConf {
   private Map<String, Object> jpaConf() {
     Map<String, Object> properties = new HashMap<>();
     properties.put("hibernate.use_sql_comments", "true");
-    properties.put("hibernate.hbm2ddl.auto", "create");
+    properties.put("hibernate.hbm2ddl.auto", "create-drop");
     // 测试时打印的参数通过log4j2-test.xml生效
     properties.put("hibernate.show_sql", "false");
     properties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
@@ -124,5 +126,10 @@ class SpringConf {
   @Bean
   public CacheManager cacheManager() {
     return new ConcurrentMapCacheManager();
+  }
+
+  @Bean
+  public TxService txService() {
+    return new TxServiceImpl();
   }
 }

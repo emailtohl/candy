@@ -3,10 +3,10 @@ package wlei.candy.jpa.envers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import wlei.candy.jpa.KeyAttribute;
-import wlei.candy.jpa.auction.entities.Bid;
-import wlei.candy.jpa.auction.entities.CreditCard;
-import wlei.candy.jpa.auction.entities.Item;
-import wlei.candy.jpa.auction.entities.Participator;
+import wlei.candy.jpa.envers.auction.entities.Bid;
+import wlei.candy.jpa.envers.auction.entities.CreditCard;
+import wlei.candy.jpa.envers.auction.entities.Item;
+import wlei.candy.jpa.envers.auction.entities.Participator;
 import wlei.candy.share.util.JsonUtil;
 
 import java.math.BigDecimal;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static wlei.candy.jpa.Auditability.*;
+import static wlei.candy.jpa.envers.Auditability.*;
 import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
 import static wlei.candy.jpa.GenericEntity.PROP_ID;
 

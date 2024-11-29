@@ -1,8 +1,9 @@
-package wlei.candy.jpa.envers.matches.matches.repo;
+package wlei.candy.jpa.envers.matches.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import wlei.candy.jpa.envers.matches.matches.entities.QyUser;
+import wlei.candy.jpa.UsualRepository;
+import wlei.candy.jpa.envers.matches.entities.QyUser;
 
 /**
  * Author: HeLei

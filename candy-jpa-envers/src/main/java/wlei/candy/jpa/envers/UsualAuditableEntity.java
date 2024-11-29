@@ -7,6 +7,7 @@ import jakarta.persistence.PreUpdate;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.util.StringUtils;
+import wlei.candy.jpa.UsualEntity;
 import wlei.candy.share.current.CurrentUserInfoFactory;
 
 import java.time.LocalDateTime;
