@@ -1,4 +1,4 @@
-package wlei.candy.jpa;
+package wlei.candy.jpa.envers;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

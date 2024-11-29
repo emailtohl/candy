@@ -1,4 +1,4 @@
-package wlei.candy.jpa.matches.entities;
+package wlei.candy.jpa.envers.matches.matches.entities;
 
 /**
  * Author: HeLei

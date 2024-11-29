@@ -27,6 +27,8 @@
   <modules>
     <module>candy-share</module>
     <module>candy-jpa</module>
+    <module>candy-jpa-envers</module>
+    <module>candy-jpa-search</module>
     <module>candy-web</module>
     <module>candy-rsa</module>
   </modules>
@@ -151,15 +153,15 @@
         <version>7.2.0.Final</version>
       </dependency>
       <dependency>
+        <groupId>org.hibernate.search</groupId>
+        <artifactId>hibernate-search-backend-lucene</artifactId>
+        <version>7.2.0.Final</version>
+      </dependency>
+      <dependency>
         <!-- Hibernate Search需要使用的 -->
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>3.6.0.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate.search</groupId>
-        <artifactId>hibernate-search-backend-lucene</artifactId>
-        <version>7.2.0.Final</version>
       </dependency>
       <dependency>
         <groupId>jakarta.servlet</groupId>

@@ -8,35 +8,31 @@
     <artifactId>candy</artifactId>
     <version>6.0-RELEASE</version>
   </parent>
-  <artifactId>candy-jpa</artifactId>
-  <name>jpa</name>
+  <artifactId>candy-jpa-envers</artifactId>
+  <name>jpa-envers</name>
   <description>
-    JPA增强
+    JPA增加审计功能
   </description>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.4.2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
   <dependencies>
     <dependency>
       <groupId>com.github.emailtohl</groupId>
-      <artifactId>candy-share</artifactId>
+      <artifactId>candy-jpa</artifactId>
       <version>${candy.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.emailtohl</groupId>
+      <artifactId>candy-jpa</artifactId>
+      <version>${candy.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-envers</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
@@ -135,16 +131,6 @@
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-envers</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.search</groupId>
-      <artifactId>hibernate-search-mapper-orm</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.search</groupId>
-      <artifactId>hibernate-search-backend-lucene</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

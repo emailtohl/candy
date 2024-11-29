@@ -116,7 +116,7 @@ public abstract class Attribute {
    * @param <A>             限定在注解类型
    * @return 如果不存在该注解，则返回null
    */
-  protected abstract <A extends Annotation> A getAnnotation(Class<A> annotationClass);
+  public abstract <A extends Annotation> A getAnnotation(Class<A> annotationClass);
 
   /**
    * 实现equals和hashCode保证在Hash容器中有正确的行为

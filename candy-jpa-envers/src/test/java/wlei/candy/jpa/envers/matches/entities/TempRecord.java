@@ -1,7 +1,6 @@
-package wlei.candy.jpa.matches.entities;
+package wlei.candy.jpa.envers.matches.matches.entities;
 
 import jakarta.persistence.Column;
-import wlei.candy.jpa.BeanEntity;
 
 /**
  * Author: HeLei

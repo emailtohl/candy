@@ -1,4 +1,4 @@
-package wlei.candy.jpa;
+package wlei.candy.jpa.search;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -30,7 +30,7 @@ import java.util.Objects;
 @ComponentScan
 @EnableTransactionManagement
 @EnableCaching
-@EnableJpaRepositories(basePackages = {"wlei.candy.jpa.auction.repo"},
+@EnableJpaRepositories(basePackages = {"wlei.candy.jpa.matches.repo", "wlei.candy.jpa.auction.repo"},
     repositoryImplementationPostfix = "ExtImpl",
     transactionManagerRef = "annotationDrivenTransactionManager",
     entityManagerFactoryRef = "entityManagerFactory")
@@ -88,7 +88,7 @@ class SpringConf {
     emfb.setDataSource(dataSource);
     emfb.setJpaVendorAdapter(jpaVendorAdapter);
     // 实际上hibernate可以扫描类路径下有JPA注解的实体类，但是JPA规范并没有此功能，所以最好还是告诉它实际所在位置
-    emfb.setPackagesToScan("wlei.candy.jpa.auction.entities");
+    emfb.setPackagesToScan("wlei.candy.jpa.matches.entities", "wlei.candy.jpa.auction.entities");
     Map<String, Object> properties = jpaConf();
     emfb.setJpaPropertyMap(properties);
     return emfb;

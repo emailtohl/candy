@@ -1,7 +1,8 @@
-package wlei.candy.jpa;
+package wlei.candy.jpa.envers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
+import wlei.candy.jpa.KeyAttribute;
 import wlei.candy.jpa.auction.entities.Bid;
 import wlei.candy.jpa.auction.entities.CreditCard;
 import wlei.candy.jpa.auction.entities.Item;

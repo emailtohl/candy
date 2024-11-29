@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Component
-class DataStub {
+public class DataStub {
   @Autowired
   ItemRepo itemRepo;
   @Autowired
