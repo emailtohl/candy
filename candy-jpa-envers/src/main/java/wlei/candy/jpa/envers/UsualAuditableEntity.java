@@ -24,16 +24,16 @@ import java.time.LocalDateTime;
 @Audited
 @MappedSuperclass
 public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends UsualEntity<A> implements Auditability<Long, A> {
-  // 创建者的信息不会变，且保存的时候与modifyBy相同，所以不需要被审计
+  // 创建者的信息不会变，且保存的时候与updateBy相同，所以不需要被审计
   @NotAudited
   @Column(nullable = false, updatable = false)
   private String createBy;
 
   @Column(nullable = false)
-  private LocalDateTime modifyTime;
+  private LocalDateTime updateTime;
 
   @Column(nullable = false)
-  private String modifyBy;
+  private String updateBy;
 
   public UsualAuditableEntity() {
   }
@@ -41,8 +41,8 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
   public UsualAuditableEntity(A src) {
     super(src);
     this.createBy = src.getCreateBy();
-    this.modifyTime = src.getModifyTime();
-    this.modifyBy = src.getModifyBy();
+    this.updateTime = src.getUpdateTime();
+    this.updateBy = src.getUpdateBy();
   }
 
   /**
@@ -57,8 +57,8 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
     arr[0] = PROP_ID;
     arr[1] = PROP_CREATE_TIME;
     arr[2] = PROP_CREATE_BY;
-    arr[3] = PROP_MODIFY_TIME;
-    arr[4] = PROP_MODIFY_BY;
+    arr[3] = PROP_UPDATE_TIME;
+    arr[4] = PROP_UPDATE_BY;
     System.arraycopy(properties, 0, arr, length, properties.length);
     return arr;
   }
@@ -75,24 +75,24 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
   }
 
   @Override
-  public LocalDateTime getModifyTime() {
-    return modifyTime;
+  public LocalDateTime getUpdateTime() {
+    return updateTime;
   }
 
   @Override
-  public A setModifyTime(LocalDateTime modifyTime) {
-    this.modifyTime = modifyTime;
+  public A setUpdateTime(LocalDateTime updateTime) {
+    this.updateTime = updateTime;
     return (A) this;
   }
 
   @Override
-  public String getModifyBy() {
-    return modifyBy;
+  public String getUpdateBy() {
+    return updateBy;
   }
 
   @Override
-  public A setModifyBy(String modifyBy) {
-    this.modifyBy = modifyBy;
+  public A setUpdateBy(String updateBy) {
+    this.updateBy = updateBy;
     return (A) this;
   }
 
@@ -101,18 +101,18 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
    */
   @PrePersist
   void beforeCreate() {
-    if (getModifyTime() == null) {
+    if (getUpdateTime() == null) {
       if (getCreateTime() != null) {
-        setModifyTime(getCreateTime());
+        setUpdateTime(getCreateTime());
       } else {
-        setModifyTime(LocalDateTime.now());
+        setUpdateTime(LocalDateTime.now());
       }
     }
     if (!StringUtils.hasText(getCreateBy())) {
       setCreateBy(CurrentUserInfoFactory.get().username());
     }
-    if (!StringUtils.hasText(getModifyBy())) {
-      setModifyBy(getCreateBy());
+    if (!StringUtils.hasText(getUpdateBy())) {
+      setUpdateBy(getCreateBy());
     }
   }
 
@@ -121,11 +121,11 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
    */
   @PreUpdate
   void beforeUpdate() {
-    if (getModifyTime() == null) {
-      setModifyTime(LocalDateTime.now());
+    if (getUpdateTime() == null) {
+      setUpdateTime(LocalDateTime.now());
     }
-    if (!StringUtils.hasText(getModifyBy())) {
-      setModifyBy(CurrentUserInfoFactory.get().username());
+    if (!StringUtils.hasText(getUpdateBy())) {
+      setUpdateBy(CurrentUserInfoFactory.get().username());
     }
   }
 }

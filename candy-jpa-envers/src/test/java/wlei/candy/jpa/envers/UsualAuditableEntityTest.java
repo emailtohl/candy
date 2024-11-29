@@ -24,13 +24,13 @@ class UsualAuditableEntityTest {
   void prePersist() {
     LocalDateTime now = LocalDateTime.now();
     SomeEntity se = new SomeEntity()
-        .setCreateTime(now.minusMinutes(1L)).setModifyTime(now)
-        .setCreateBy("foo").setModifyBy("bar");
+        .setCreateTime(now.minusMinutes(1L)).setUpdateTime(now)
+        .setCreateBy("foo").setUpdateBy("bar");
     assertNotEquals(now, se.getCreateTime());
     se = new SomeEntity(se);
-    assertNotNull(se.getModifyTime());
-    assertNotEquals(se.getCreateBy(), se.getModifyBy());
-    assertNotEquals(se.getCreateTime(), se.getModifyTime());
+    assertNotNull(se.getUpdateTime());
+    assertNotEquals(se.getCreateBy(), se.getUpdateBy());
+    assertNotEquals(se.getCreateTime(), se.getUpdateTime());
   }
 
   @Test
@@ -39,9 +39,9 @@ class UsualAuditableEntityTest {
     se.setCreateBy("foo");
     LocalDateTime now = LocalDateTime.now();
     se.setCreateTime(now);
-    se.setModifyTime(now.plusHours(1L));
-    assertNotEquals(now, se.getModifyTime());
-    assertNotEquals(se.getCreateTime(), se.getModifyTime());
+    se.setUpdateTime(now.plusHours(1L));
+    assertNotEquals(now, se.getUpdateTime());
+    assertNotEquals(se.getCreateTime(), se.getUpdateTime());
   }
 
   @Test
@@ -52,8 +52,8 @@ class UsualAuditableEntityTest {
     KeyAttribute[] keyAttributes = KeyAttribute.parse(c);
     assertEquals(1, keyAttributes.length);
 
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_CREATE_BY, PROP_MODIFY_TIME, PROP_MODIFY_BY}, c.includeBasePropertyNames());
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_CREATE_BY, PROP_MODIFY_TIME, PROP_MODIFY_BY, "password"}, c.includeBasePropertyNames("password"));
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY}, c.includeBasePropertyNames());
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY, "password"}, c.includeBasePropertyNames("password"));
   }
 
   @Test
@@ -86,15 +86,15 @@ class UsualAuditableEntityTest {
     item.getBids().add(new Bid("baz", item, new Participator("fuz"), new BigDecimal(100)));
 
     LocalDateTime now = LocalDateTime.now();
-    System.out.println(item.setCreateTime(now).setModifyTime(now));
+    System.out.println(item.setCreateTime(now).setUpdateTime(now));
 
     assertTrue(timeEquals(item.getCreateTime(), now));
-    assertTrue(timeEquals(item.getModifyTime(), now));
+    assertTrue(timeEquals(item.getUpdateTime(), now));
 
     String json = JsonUtil.writeValue(item);
     item = JsonUtil.readValue(json, Item.class);
     assertTrue(timeEquals(item.getCreateTime(), now));
-    assertTrue(timeEquals(item.getModifyTime(), now));
+    assertTrue(timeEquals(item.getUpdateTime(), now));
   }
 
   private boolean timeEquals(LocalDateTime d1, LocalDateTime d2) {

@@ -67,8 +67,8 @@ class AuditableRepositoryCRUDTest {
     // 测试审计历史版本的功能
     List<RevTuple<Long, Item, Item>> revisions = tx.exec(() -> itemRepo.getRevisions(id));
     assertFalse(revisions.isEmpty());
-    assertTrue(StringUtils.hasText(revisions.iterator().next().getEntity().getModifyBy()));
-    assertNotNull(revisions.iterator().next().getEntity().getModifyTime());
+    assertTrue(StringUtils.hasText(revisions.iterator().next().getEntity().getUpdateBy()));
+    assertNotNull(revisions.iterator().next().getEntity().getUpdateTime());
     long count = revisions.size();
     assertTrue(count > 1);
 

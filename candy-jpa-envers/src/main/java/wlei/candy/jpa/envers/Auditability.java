@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
  */
 public interface Auditability<I extends Serializable, E extends GenericEntity<I, E>> {
   String PROP_CREATE_BY = "createBy";
-  String PROP_MODIFY_TIME = "modifyTime";
-  String PROP_MODIFY_BY = "modifyBy";
+  String PROP_UPDATE_TIME = "updateTime";
+  String PROP_UPDATE_BY = "updateBy";
 
   LocalDateTime getCreateTime();
 
@@ -27,11 +27,11 @@ public interface Auditability<I extends Serializable, E extends GenericEntity<I,
 
   E setCreateBy(String createBy);
 
-  LocalDateTime getModifyTime();
+  LocalDateTime getUpdateTime();
 
-  E setModifyTime(LocalDateTime modifyTime);
+  E setUpdateTime(LocalDateTime updateTime);
 
-  String getModifyBy();
+  String getUpdateBy();
 
-  E setModifyBy(String modifyBy);
+  E setUpdateBy(String updateBy);
 }
