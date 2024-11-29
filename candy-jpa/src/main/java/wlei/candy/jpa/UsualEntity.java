@@ -26,8 +26,8 @@ public class UsualEntity<E extends UsualEntity<E>> extends GenericEntity<Long, E
   public UsualEntity() {
   }
 
-  public UsualEntity(Long id) {
-    this.id = id;
+  public UsualEntity(E src) {
+    super(src);
   }
 
   @Override

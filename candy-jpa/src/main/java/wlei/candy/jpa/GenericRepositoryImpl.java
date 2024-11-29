@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static wlei.candy.jpa.GenericEntity.PROP_ID;
+import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
 
 /**
  * <p>数据仓库的基础类，提供常用增、删、改、查的功能</p>
@@ -246,7 +246,7 @@ public abstract class GenericRepositoryImpl<I extends Serializable, E extends Ge
     CriteriaBuilder b = entityManager.getCriteriaBuilder();
     CriteriaQuery<E> q = b.createQuery(entityClass);
     Root<E> r = q.from(entityClass);
-    q = q.select(r).orderBy(b.desc(r.get(PROP_ID)));
+    q = q.select(r).orderBy(b.desc(r.get(PROP_CREATE_TIME)));
     supplier.get(b, r).ifPresent(q::where);
     return entityManager.createQuery(q).getResultList();
   }

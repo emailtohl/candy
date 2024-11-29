@@ -16,6 +16,7 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static wlei.candy.jpa.Auditability.*;
+import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
 import static wlei.candy.jpa.GenericEntity.PROP_ID;
 
 class UsualAuditableEntityTest {

@@ -23,9 +23,6 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends UsualEntity<A> implements Auditability<Long, A> {
   @Column(nullable = false, updatable = false)
-  private LocalDateTime createTime;
-
-  @Column(nullable = false, updatable = false)
   private String createBy;
 
   @Column(nullable = false)
@@ -38,8 +35,7 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
   }
 
   public UsualAuditableEntity(A src) {
-    super(src.getId());
-    this.createTime = src.getCreateTime();
+    super(src);
     this.createBy = src.getCreateBy();
     this.modifyTime = src.getModifyTime();
     this.modifyBy = src.getModifyBy();
@@ -61,17 +57,6 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
     arr[4] = PROP_MODIFY_BY;
     System.arraycopy(properties, 0, arr, length, properties.length);
     return arr;
-  }
-
-  @Override
-  public LocalDateTime getCreateTime() {
-    return createTime;
-  }
-
-  @Override
-  public A setCreateTime(LocalDateTime createTime) {
-    this.createTime = createTime;
-    return (A) this;
   }
 
   @Override
@@ -112,11 +97,12 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
    */
   @PrePersist
   void prePersist() {
-    if (getCreateTime() == null) {
-      setCreateTime(LocalDateTime.now());
-    }
     if (getModifyTime() == null) {
-      setModifyTime(getCreateTime());
+      if (getCreateTime() != null) {
+        setModifyTime(getCreateTime());
+      } else {
+        setModifyTime(LocalDateTime.now());
+      }
     }
     if (!StringUtils.hasText(getCreateBy())) {
       setCreateBy(CurrentUserInfoFactory.get().username());

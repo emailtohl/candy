@@ -1,9 +1,12 @@
 package wlei.candy.jpa;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -20,6 +23,17 @@ import java.util.Objects;
 @MappedSuperclass
 public abstract class GenericEntity<I extends Serializable, E extends GenericEntity<I, E>> implements Serializable, Cloneable {
   public static final String PROP_ID = "id";
+  public static final String PROP_CREATE_TIME = "createTime";
+
+  private LocalDateTime createTime;
+
+  public GenericEntity() {
+  }
+
+  public GenericEntity(E src) {
+    setId(src.getId());
+    setCreateTime(src.getCreateTime());
+  }
 
   /**
    * id，由子类决定生成方式
@@ -29,6 +43,16 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
   public abstract I getId();
 
   public abstract E setId(I id);
+
+  @Column(nullable = false, updatable = false)
+  public LocalDateTime getCreateTime() {
+    return createTime;
+  }
+
+  public E setCreateTime(LocalDateTime createTime) {
+    this.createTime = createTime;
+    return (E) this;
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -56,4 +80,13 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
     }
   }
 
+  /**
+   * 保存前处理
+   */
+  @PrePersist
+  void prePersist() {
+    if (getCreateTime() == null) {
+      setCreateTime(LocalDateTime.now());
+    }
+  }
 }

@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
  * @param <E> 可被审计的实体的类型
  */
 public interface Auditability<I extends Serializable, E extends GenericEntity<I, E>> {
-  String PROP_CREATE_TIME = "createTime";
   String PROP_CREATE_BY = "createBy";
   String PROP_MODIFY_TIME = "modifyTime";
   String PROP_MODIFY_BY = "modifyBy";

@@ -18,8 +18,8 @@ public class BeanEntity<E extends GenericEntity<Long, E>> extends GenericEntity<
   public BeanEntity() {
   }
 
-  public BeanEntity(Long id) {
-    this.id = id;
+  public BeanEntity(E src) {
+    super(src);
   }
 
   // 注意：配置上“hibernate.id.db_structure_naming_strategy=legacy”，则ID可以使用hibernate_sequence提供的序列
@@ -30,6 +30,7 @@ public class BeanEntity<E extends GenericEntity<Long, E>> extends GenericEntity<
     return id;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public E setId(Long id) {
     this.id = id;
