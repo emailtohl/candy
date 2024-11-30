@@ -30,6 +30,10 @@ public class UsualEntity<E extends UsualEntity<E>> extends GenericEntity<Long, E
     super(src);
   }
 
+  public E copyBasicFrom(UsualEntity<? extends UsualEntity<?>> src) {
+    return super.copyBasicFrom(src);
+  }
+
   @Override
   public Long getId() {
     return id;

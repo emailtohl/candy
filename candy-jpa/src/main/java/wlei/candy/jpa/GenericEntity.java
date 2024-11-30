@@ -22,6 +22,7 @@ import java.util.Objects;
 public abstract class GenericEntity<I extends Serializable, E extends GenericEntity<I, E>> implements Serializable, Cloneable {
   public static final String PROP_ID = "id";
   public static final String PROP_CREATE_TIME = "createTime";
+  public static final String PROP_MOD_VER = "modVer";
 
   private LocalDateTime createTime;
   /**
@@ -33,8 +34,21 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
   }
 
   public GenericEntity(E src) {
+    if (src == null) {
+      return;
+    }
     setId(src.getId());
     setCreateTime(src.getCreateTime());
+    setModVer(src.getModVer());
+  }
+
+  protected E copyBasicFrom(GenericEntity<I, ? extends GenericEntity<I, ?>> src) {
+    if (src == null) {
+      return (E) this;
+    }
+    return this.setId(src.getId())
+        .setCreateTime(src.getCreateTime())
+        .setModVer(src.getModVer());
   }
 
   /**

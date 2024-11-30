@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
-import static wlei.candy.jpa.GenericEntity.PROP_ID;
+import static wlei.candy.jpa.GenericEntity.*;
 import static wlei.candy.jpa.envers.Auditability.*;
 
 class UsualAuditableEntityTest {
@@ -52,8 +51,8 @@ class UsualAuditableEntityTest {
     KeyAttribute[] keyAttributes = KeyAttribute.parse(c);
     assertEquals(1, keyAttributes.length);
 
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY}, c.includeBasePropertyNames());
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY, "password"}, c.includeBasePropertyNames("password"));
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY}, c.includeBasePropertyNames());
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY, "password"}, c.includeBasePropertyNames("password"));
   }
 
   @Test
@@ -101,6 +100,25 @@ class UsualAuditableEntityTest {
     String sd1 = d1.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).substring(0, 19);
     String sd2 = d2.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).substring(0, 19);
     return sd2.equals(sd1);
+  }
+
+  @Test
+  void copyBasicFrom() {
+    Item item = new Item()
+        .setId(1L)
+        .setCreateTime(LocalDateTime.now()).setModVer(1)
+        .setCreateBy("xxx").setUpdateBy("yyy").setUpdateTime(LocalDateTime.now().plusHours(1L))
+        .setName("foo").setDescription("desc");
+    Item other = new Item().copyBasicFrom(item);
+    assertEquals(1L, other.getId());
+    assertEquals(1, other.getModVer());
+    assertNotNull(other.getCreateTime());
+    assertEquals("xxx", other.getCreateBy());
+    assertEquals("yyy", other.getUpdateBy());
+    assertNotNull(other.getCreateTime());
+    assertNotNull(other.getUpdateTime());
+    assertNull(other.getName());
+    assertNull(other.getDescription());
   }
 
   private static class SomeEntity extends UsualAuditableEntity<SomeEntity> {

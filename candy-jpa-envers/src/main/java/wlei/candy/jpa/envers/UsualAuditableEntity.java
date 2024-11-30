@@ -45,6 +45,14 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
     this.updateBy = src.getUpdateBy();
   }
 
+  public A copyBasicFrom(UsualAuditableEntity<? extends UsualAuditableEntity<?>> src) {
+    super.copyBasicFrom(src);
+    return this.setCreateBy(src.getCreateBy())
+        .setUpdateTime(src.getUpdateTime())
+        .setUpdateBy(src.getUpdateBy());
+
+  }
+
   /**
    * 获取实体对象基本属性的名字，如id，主要应用场景是BeanUtils.copyProperties时忽略属性之用
    *
@@ -52,13 +60,14 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
    * @return BaseEntity的属性名 string [ ]
    */
   public String[] includeBasePropertyNames(String... properties) {
-    final short length = 5;
+    final short length = 6;
     String[] arr = new String[length + properties.length];
     arr[0] = PROP_ID;
     arr[1] = PROP_CREATE_TIME;
-    arr[2] = PROP_CREATE_BY;
-    arr[3] = PROP_UPDATE_TIME;
-    arr[4] = PROP_UPDATE_BY;
+    arr[2] = PROP_MOD_VER;
+    arr[3] = PROP_CREATE_BY;
+    arr[4] = PROP_UPDATE_TIME;
+    arr[5] = PROP_UPDATE_BY;
     System.arraycopy(properties, 0, arr, length, properties.length);
     return arr;
   }
