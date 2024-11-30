@@ -18,6 +18,7 @@ import java.util.Objects;
 // JSON序列化时忽略JPA/Hibernate懒加载属性
 @SuppressWarnings("unchecked")
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"hibernateLazyInitializer", "handler", "fieldHandler"})
+@EntityListeners(EntityStateListener.class)
 @MappedSuperclass
 public abstract class GenericEntity<I extends Serializable, E extends GenericEntity<I, E>> implements Serializable, Cloneable {
   public static final String PROP_ID = "id";
