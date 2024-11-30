@@ -51,8 +51,8 @@ class UsualAuditableEntityTest {
     KeyAttribute[] keyAttributes = KeyAttribute.parse(c);
     assertEquals(1, keyAttributes.length);
 
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY}, c.includeBasePropertyNames());
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY, "password"}, c.includeBasePropertyNames("password"));
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY}, c.includeBasicPropertyNames());
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY, "password"}, c.includeBasicPropertyNames("password"));
   }
 
   @Test
@@ -67,7 +67,7 @@ class UsualAuditableEntityTest {
     Item item2 = new Item();
     item2.setId(111L);
     item2.setName("xxx");
-    BeanUtils.copyProperties(item1, item2, item1.includeBasePropertyNames("name"));
+    BeanUtils.copyProperties(item1, item2, item1.includeBasicPropertyNames("name"));
     assertEquals(111, item2.getId());
     assertEquals("xxx", item2.getName());
     assertEquals("hello world", item2.getDescription());
@@ -119,6 +119,13 @@ class UsualAuditableEntityTest {
     assertNotNull(other.getUpdateTime());
     assertNull(other.getName());
     assertNull(other.getDescription());
+  }
+
+  @Test
+  void includeBasicPropertyNames() {
+    Item item = new Item();
+    String[] props = item.includeBasicPropertyNames("name");
+    assertArrayEquals(new String[]{"id", "createTime", "modVer", "createBy", "updateTime", "updateBy", "name"}, props);
   }
 
   private static class SomeEntity extends UsualAuditableEntity<SomeEntity> {

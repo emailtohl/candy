@@ -110,6 +110,22 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
   }
 
   /**
+   * 获取实体对象基本属性的名字，如id，主要应用场景是BeanUtils.copyProperties时忽略属性之用
+   *
+   * @param properties 属性的名字
+   * @return BaseEntity的属性名 string [ ]
+   */
+  public String[] includeBasicPropertyNames(String... properties) {
+    final short length = 3;
+    String[] result = new String[length + properties.length];
+    result[0] = PROP_ID;
+    result[1] = PROP_CREATE_TIME;
+    result[2] = PROP_MOD_VER;
+    System.arraycopy(properties, 0, result, length, properties.length);
+    return result;
+  }
+
+  /**
    * 保存前处理
    * final修饰符，保证不被子类覆盖，否则确实创建时间
    */
