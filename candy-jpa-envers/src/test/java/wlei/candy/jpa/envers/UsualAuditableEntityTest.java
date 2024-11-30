@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static wlei.candy.jpa.envers.Auditability.*;
 import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
 import static wlei.candy.jpa.GenericEntity.PROP_ID;
+import static wlei.candy.jpa.envers.Auditability.*;
 
 class UsualAuditableEntityTest {
 

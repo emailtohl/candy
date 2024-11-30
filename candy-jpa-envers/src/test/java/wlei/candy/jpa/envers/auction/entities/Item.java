@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.envers.Audited;
 import org.springframework.format.annotation.DateTimeFormat;
-import wlei.candy.jpa.UsualEntity;
 import wlei.candy.jpa.envers.UsualAuditableEntity;
 
 import java.math.BigDecimal;

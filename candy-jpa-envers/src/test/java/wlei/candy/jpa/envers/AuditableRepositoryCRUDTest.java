@@ -30,6 +30,9 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
+import static wlei.candy.jpa.GenericEntity.PROP_ID;
+import static wlei.candy.jpa.envers.Auditability.PROP_CREATE_BY;
 
 // SpringExtension与Junit 5 jupiter 的@ExtendWith注释一起使用，用于集成SpringTestContext和Junit5 Jupiter测试
 @ExtendWith(SpringExtension.class)
@@ -123,6 +126,45 @@ class AuditableRepositoryCRUDTest {
       assertTrue(count > 0);
       return count;
     });
+  }
+
+  // 测试不可变
+  @Test
+  void immutabilityTest() {
+    final LocalDateTime t1 = LocalDateTime.of(2024, 11, 28, 12, 0, 0, 0);
+    final LocalDateTime t2 = LocalDateTime.of(2024, 11, 29, 12, 0, 0, 0);
+    final LocalDateTime t3 = LocalDateTime.of(2024, 11, 30, 12, 0, 0, 0);
+    Item i = new Item().setCreateTime(t1).setCreateBy("foo").setName("xxy").setDescription("desc").setSeller(data.getSeller());
+    final Long _id = tx.exec(() -> itemRepo.add(i).getId());
+    tx.exec(() -> {
+      Item item = itemRepo.get(_id).orElseThrow(IllegalArgumentException::new);
+      item.setCreateTime(t2);
+      item.setCreateBy("bar");
+      item.setDescription("update desc");
+      return null;
+    });
+    // createTime被设置为：updatable = false，所以update时，createTime不会更新，仍然是原来的创建时间
+    assertNotEquals(t2, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    assertNotEquals("bar", tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateBy()));
+    assertEquals(t1, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    assertEquals("foo", tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateBy()));
+    // 但是description会被更新
+    assertEquals("update desc", tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getDescription()));
+
+    tx.exec(() -> {
+      QueryParameters params = new QueryParameters().add(PROP_ID, _id);
+      int count = itemRepo.update(params, new KeyAttribute(PROP_CREATE_TIME, t3), new KeyAttribute(PROP_CREATE_BY, "fuz"));
+      assertTrue(count > 0);
+      return count;
+    });
+    // 但是指定更新的这个方法不受限制，createTime被更改
+    assertNotEquals(t1, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    assertNotEquals(t2, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    assertEquals(t3, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+
+    assertNotEquals("foo", tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateBy()));
+    assertNotEquals("bar", tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateBy()));
+    assertEquals("fuz", tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateBy()));
   }
 
   @Test

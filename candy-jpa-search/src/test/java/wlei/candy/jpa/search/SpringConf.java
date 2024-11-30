@@ -102,6 +102,7 @@ class SpringConf {
     properties.put("hibernate.hbm2ddl.auto", "create-drop");
     // 测试时打印的参数通过log4j2-test.xml生效
     properties.put("hibernate.show_sql", "false");
+    properties.put("hibernate.format_sql", "false");
     properties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
     properties.put("hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName());
     // ID仍然取值于hibernate_sequence序列

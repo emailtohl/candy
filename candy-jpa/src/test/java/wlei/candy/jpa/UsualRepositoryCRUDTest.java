@@ -26,6 +26,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
+import static wlei.candy.jpa.GenericEntity.PROP_ID;
 
 // SpringExtension与Junit 5 jupiter 的@ExtendWith注释一起使用，用于集成SpringTestContext和Junit5 Jupiter测试
 @ExtendWith(SpringExtension.class)
@@ -101,6 +103,7 @@ class UsualRepositoryCRUDTest {
     return Optional.of(and);
   }
 
+  // 测试指定值更新
   @Test
   void update() {
     tx.exec(() -> {
@@ -111,6 +114,49 @@ class UsualRepositoryCRUDTest {
     });
     Item item = cacheService.get(Item.class, data.getItem().getId());
     assertEquals("desc 5", item.getDescription());
+  }
+
+  // 测试乐观锁
+  @Test
+  void optlock() {
+    tx.exec(() -> {
+      itemRepo.get(id).ifPresent(i -> i.setDescription("desc 6"));
+      return null;
+    });
+    assertEquals("desc 6", tx.exec(() -> itemRepo.get(id).orElseThrow(IllegalArgumentException::new).getDescription()));
+    assertTrue(tx.exec(() -> itemRepo.get(id).orElseThrow(IllegalArgumentException::new).getModVer()) > 0);
+  }
+
+  // 测试不可变
+  @Test
+  void immutabilityTest() {
+    final LocalDateTime t1 = LocalDateTime.of(2024, 11, 28, 12, 0, 0, 0);
+    final LocalDateTime t2 = LocalDateTime.of(2024, 11, 29, 12, 0, 0, 0);
+    final LocalDateTime t3 = LocalDateTime.of(2024, 11, 30, 12, 0, 0, 0);
+    Item i = new Item().setCreateTime(t1).setName("xxy").setDescription("desc").setSeller(data.getSeller());
+    final Long _id = tx.exec(() -> itemRepo.add(i).getId());
+    tx.exec(() -> {
+      Item item = itemRepo.get(_id).orElseThrow(IllegalArgumentException::new);
+      item.setCreateTime(t2);
+      item.setDescription("update desc");
+      return null;
+    });
+    // createTime被设置为：updatable = false，所以update时，createTime不会更新，仍然是原来的创建时间
+    assertNotEquals(t2, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    assertEquals(t1, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    // 但是description会被更新
+    assertEquals("update desc", tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getDescription()));
+
+    tx.exec(() -> {
+      QueryParameters params = new QueryParameters().add(PROP_ID, _id);
+      int count = itemRepo.update(params, new KeyAttribute(PROP_CREATE_TIME, t3));
+      assertTrue(count > 0);
+      return count;
+    });
+    // 但是指定更新的这个方法不受限制，createTime被更改
+    assertNotEquals(t1, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    assertNotEquals(t2, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
+    assertEquals(t3, tx.exec(() -> itemRepo.get(_id).orElseThrow(IllegalArgumentException::new).getCreateTime()));
   }
 
   @Test

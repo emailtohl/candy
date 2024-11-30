@@ -1,9 +1,7 @@
 package wlei.candy.jpa;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -26,6 +24,10 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
   public static final String PROP_CREATE_TIME = "createTime";
 
   private LocalDateTime createTime;
+  /**
+   * 修改的版本号，用于乐观锁
+   */
+  private int modVer;
 
   public GenericEntity() {
   }
@@ -44,6 +46,7 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
 
   public abstract E setId(I id);
 
+  @Access(AccessType.PROPERTY)
   @Column(nullable = false, updatable = false)
   public LocalDateTime getCreateTime() {
     return createTime;
@@ -51,6 +54,18 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
 
   public E setCreateTime(LocalDateTime createTime) {
     this.createTime = createTime;
+    return (E) this;
+  }
+
+  @Access(AccessType.PROPERTY)
+  @Version
+  @Column
+  public int getModVer() {
+    return modVer;
+  }
+
+  public E setModVer(int modVer) {
+    this.modVer = modVer;
     return (E) this;
   }
 

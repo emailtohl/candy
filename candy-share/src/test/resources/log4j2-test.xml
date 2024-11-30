@@ -34,7 +34,7 @@
       <!-- <appender-ref ref="FileAppender" /> -->
     </logger>
     <!-- 配置为TRACE，则可让hibernate打印sql -->
-    <logger name="org.hibernate.orm.jdbc" level="WARN">
+    <logger name="org.hibernate.orm.jdbc" level="WARN" additivity="false">
       <appender-ref ref="Console"/>
     </logger>
   </loggers>
