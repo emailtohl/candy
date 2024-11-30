@@ -2,6 +2,8 @@ package wlei.candy.jpa;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 
 /**
  * 实体状态变化的监听器，被GenericEntity使用
@@ -16,7 +18,7 @@ class EntityStateListener {
    * @param entity 对应的实体
    */
   @PrePersist
-  void prePersist(GenericEntity<?, ?> entity) {
+  <I extends Serializable, E extends GenericEntity<I, E>> void prePersist(GenericEntity<I, E> entity) {
     for (EntityStateHandler handler : EntityStateHandler.HANDLERS) {
       handler.prePersist(entity);
     }
@@ -28,7 +30,7 @@ class EntityStateListener {
    * @param entity 对应的实体
    */
   @PreUpdate
-  void preUpdate(GenericEntity<?, ?> entity) {
+  <I extends Serializable, E extends GenericEntity<I, E>> void preUpdate(GenericEntity<I, E> entity) {
     for (EntityStateHandler handler : EntityStateHandler.HANDLERS) {
       handler.preUpdate(entity);
     }
@@ -40,7 +42,7 @@ class EntityStateListener {
    * @param entity 对应的实体
    */
   @PreRemove
-  void preRemove(GenericEntity<?, ?> entity) {
+  <I extends Serializable, E extends GenericEntity<I, E>> void preRemove(GenericEntity<I, E> entity) {
     for (EntityStateHandler handler : EntityStateHandler.HANDLERS) {
       handler.preRemove(entity);
     }
@@ -52,7 +54,7 @@ class EntityStateListener {
    * @param entity 对应的实体
    */
   @PostLoad
-  void postLoad(GenericEntity<?, ?> entity) {
+  <I extends Serializable, E extends GenericEntity<I, E>> void postLoad(GenericEntity<I, E> entity) {
     for (EntityStateHandler handler : EntityStateHandler.HANDLERS) {
       handler.postLoad(entity);
     }
@@ -64,7 +66,7 @@ class EntityStateListener {
    * @param entity 对应的实体
    */
   @PostPersist
-  void postPersist(GenericEntity<?, ?> entity) {
+  <I extends Serializable, E extends GenericEntity<I, E>> void postPersist(GenericEntity<I, E> entity) {
     for (EntityStateHandler handler : EntityStateHandler.HANDLERS) {
       handler.postPersist(entity);
     }
@@ -76,7 +78,7 @@ class EntityStateListener {
    * @param entity 对应的实体
    */
   @PostUpdate
-  void postUpdate(GenericEntity<?, ?> entity) {
+  <I extends Serializable, E extends GenericEntity<I, E>> void postUpdate(GenericEntity<I, E> entity) {
     for (EntityStateHandler handler : EntityStateHandler.HANDLERS) {
       handler.postUpdate(entity);
     }
@@ -88,7 +90,7 @@ class EntityStateListener {
    * @param entity 对应的实体
    */
   @PostRemove
-  void postRemove(GenericEntity<?, ?> entity) {
+  <I extends Serializable, E extends GenericEntity<I, E>> void postRemove(GenericEntity<I, E> entity) {
     for (EntityStateHandler handler : EntityStateHandler.HANDLERS) {
       handler.postRemove(entity);
     }

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -29,7 +30,7 @@ public abstract class EntityStateHandler implements Closeable {
    *
    * @param entity 对应的实体
    */
-  protected void prePersist(GenericEntity<?, ?> entity) {
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void prePersist(GenericEntity<I, E> entity) {
     if (logger.isTraceEnabled()) {
       logger.trace("{} prePersist id {}", entity.getClass().getSimpleName(), entity.getId());
     }
@@ -40,7 +41,7 @@ public abstract class EntityStateHandler implements Closeable {
    *
    * @param entity 对应的实体
    */
-  protected void preUpdate(GenericEntity<?, ?> entity) {
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void preUpdate(GenericEntity<I, E> entity) {
     if (logger.isTraceEnabled()) {
       logger.trace("{} PreUpdate id {}", entity.getClass().getSimpleName(), entity.getId());
     }
@@ -51,7 +52,7 @@ public abstract class EntityStateHandler implements Closeable {
    *
    * @param entity 对应的实体
    */
-  protected void preRemove(GenericEntity<?, ?> entity) {
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void preRemove(GenericEntity<I, E> entity) {
     if (logger.isTraceEnabled()) {
       logger.trace("entity (name:{}, id:{}) about to be deleted.", entity.getClass().getSimpleName(), entity.getId());
     }
@@ -62,7 +63,7 @@ public abstract class EntityStateHandler implements Closeable {
    *
    * @param entity 对应的实体
    */
-  protected void postLoad(GenericEntity<?, ?> entity) {
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void postLoad(GenericEntity<I, E> entity) {
     if (logger.isTraceEnabled()) {
       logger.trace("{} PostLoad id {}", entity.getClass(), entity.getId());
     }
@@ -73,7 +74,7 @@ public abstract class EntityStateHandler implements Closeable {
    *
    * @param entity 对应的实体
    */
-  protected void postPersist(GenericEntity<?, ?> entity) {
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void postPersist(GenericEntity<I, E> entity) {
     if (logger.isTraceEnabled()) {
       logger.trace("entity (name:{}, id:{}) inserted into database.", entity.getClass().getSimpleName(), entity.getId());
     }
@@ -84,7 +85,7 @@ public abstract class EntityStateHandler implements Closeable {
    *
    * @param entity 对应的实体
    */
-  protected void postUpdate(GenericEntity<?, ?> entity) {
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void postUpdate(GenericEntity<I, E> entity) {
     if (logger.isTraceEnabled()) {
       logger.trace("entity (name:{}, id:{}) just updated in the database.", entity.getClass().getSimpleName(), entity.getId());
     }
@@ -95,7 +96,7 @@ public abstract class EntityStateHandler implements Closeable {
    *
    * @param entity 对应的实体
    */
-  protected void postRemove(GenericEntity<?, ?> entity) {
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void postRemove(GenericEntity<I, E> entity) {
     if (logger.isTraceEnabled()) {
       logger.trace("entity (name:{}, id:{}) about deleted from database.", entity.getClass().getSimpleName(), entity.getId());
     }

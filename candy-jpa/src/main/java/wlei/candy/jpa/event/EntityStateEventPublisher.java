@@ -7,6 +7,8 @@ import org.springframework.lang.NonNull;
 import wlei.candy.jpa.EntityStateHandler;
 import wlei.candy.jpa.GenericEntity;
 
+import java.io.Serializable;
+
 /**
  * 当实体发生变化后，将消息通知到spring的上下文中，需注册为Spring的bean
  * <p>
@@ -20,18 +22,18 @@ public class EntityStateEventPublisher extends EntityStateHandler implements App
   }
 
   @Override
-  protected void postPersist(GenericEntity<?, ?> entity) {
-    publisher.publishEvent(new AddEvent(entity));
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void postPersist(GenericEntity<I, E> entity) {
+    publisher.publishEvent(new AddEvent<>(entity));
   }
 
   @Override
-  protected void postUpdate(GenericEntity<?, ?> entity) {
-    publisher.publishEvent(new ModEvent(entity));
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void postUpdate(GenericEntity<I, E> entity) {
+    publisher.publishEvent(new ModEvent<>(entity));
   }
 
   @Override
-  protected void postRemove(GenericEntity<?, ?> entity) {
-    publisher.publishEvent(new DelEvent(entity));
+  protected <I extends Serializable, E extends GenericEntity<I, E>> void postRemove(GenericEntity<I, E> entity) {
+    publisher.publishEvent(new DelEvent<>(entity));
   }
 
   @Override
