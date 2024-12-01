@@ -272,4 +272,12 @@ public abstract class GenericRepositoryImpl<I extends Serializable, E extends Ge
     return (b, r) -> new PredicateBuilder<>(b, r).and(parameters);
   }
 
+  /**
+   * @return EntityManager
+   */
+  @Override
+  public EntityManager getEntityManager() {
+    return entityManager;
+  }
+
 }

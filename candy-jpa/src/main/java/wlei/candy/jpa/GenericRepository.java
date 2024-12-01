@@ -1,5 +1,6 @@
 package wlei.candy.jpa;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
@@ -108,4 +109,9 @@ public interface GenericRepository<I extends Serializable, E extends GenericEnti
    * @return 实体列表
    */
   List<E> query(QueryParameters parameters);
+
+  /**
+   * @return EntityManager
+   */
+  EntityManager getEntityManager();
 }
