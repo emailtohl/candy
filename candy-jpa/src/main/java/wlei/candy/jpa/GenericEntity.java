@@ -29,7 +29,6 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
   private LocalDateTime deleteTime;
 
 
-
   /**
    * 修改的版本号，用于乐观锁
    */

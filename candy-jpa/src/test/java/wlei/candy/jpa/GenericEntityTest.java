@@ -5,7 +5,7 @@ import wlei.candy.jpa.auction.entities.Item;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 /**
  * Author: HeLei

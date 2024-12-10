@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import wlei.candy.jpa.SoftDeletable;
 import wlei.candy.jpa.UsualEntity;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +17,7 @@ public class Category extends UsualEntity<Category> implements SoftDeletable<Lon
   @NotNull
   protected String name;
 
-  protected LocalDateTime deleteTime;
+  protected boolean deleted;
 
   // The root of the tree has no parent, column has to be nullable!
   @ManyToOne
@@ -80,13 +79,13 @@ public class Category extends UsualEntity<Category> implements SoftDeletable<Lon
   }
 
   @Override
-  public LocalDateTime getDeleteTime() {
-    return deleteTime;
+  public boolean isDeleted() {
+    return deleted;
   }
 
   @Override
-  public Category setDeleteTime(LocalDateTime deleteTime) {
-    this.deleteTime = deleteTime;
+  public Category setDeleted(boolean deleted) {
+    this.deleted = deleted;
     return this;
   }
 }

@@ -40,9 +40,9 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
    */
   @SuppressWarnings("unchecked")
   public List<Predicate> getPredicates(QueryParameters params) {
-    List<Predicate> p = new ArrayList<>();
+    List<Predicate> predicates = new ArrayList<>();
     if (params == null) {
-      return p;
+      return predicates;
     }
     for (Entry<String, ?> e : params.entrySet()) {
       Object value = e.getValue();
@@ -61,22 +61,22 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
       }
       // 如果查询值后缀有“%”，那么就用like查询
       if (value instanceof String && ((String) value).endsWith("%")) {
-        p.add(criteriaBuilder.like(criteriaBuilder.lower((Path<String>) path), ((String) value).toLowerCase()));
+        predicates.add(criteriaBuilder.like(criteriaBuilder.lower((Path<String>) path), ((String) value).toLowerCase()));
       } else if (value instanceof Collection) {
         assert path != null;
-        p.add(path.in((Collection<?>) value));
+        predicates.add(path.in((Collection<?>) value));
       } else {
-        p.add(criteriaBuilder.equal(path, value));
+        predicates.add(criteriaBuilder.equal(path, value));
       }
     }
     BiFunction<CriteriaBuilder, Root<E>, List<Predicate>> supplement = params.getSupplement();
     if (supplement != null) {
-      p.addAll(supplement.apply(criteriaBuilder, root));
+      predicates.addAll(supplement.apply(criteriaBuilder, root));
     }
-    if (SoftDeletable.class.isAssignableFrom(root.getJavaType())) {
-      p.add(criteriaBuilder.isNull(root.get(SOFT_DEL_PROP)));
+    if (!params.containsKey(SOFT_DEL_PROP) && root.getJavaType() != null && SoftDeletable.class.isAssignableFrom(root.getJavaType())) {
+      predicates.add(criteriaBuilder.isFalse(root.get(SOFT_DEL_PROP)));
     }
-    return p;
+    return predicates;
   }
 
   /**
@@ -89,4 +89,5 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
   public Optional<Predicate> and(QueryParameters parameters) {
     return getPredicates(parameters).stream().reduce(criteriaBuilder::and);
   }
+
 }

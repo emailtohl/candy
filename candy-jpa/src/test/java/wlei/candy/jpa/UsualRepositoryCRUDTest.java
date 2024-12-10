@@ -31,6 +31,7 @@ import java.util.function.BiFunction;
 import static org.junit.jupiter.api.Assertions.*;
 import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
 import static wlei.candy.jpa.GenericEntity.PROP_ID;
+import static wlei.candy.jpa.SoftDeletable.SOFT_DEL_PROP;
 
 // SpringExtension与Junit 5 jupiter 的@ExtendWith注释一起使用，用于集成SpringTestContext和Junit5 Jupiter测试
 @ExtendWith(SpringExtension.class)
@@ -197,7 +198,7 @@ class UsualRepositoryCRUDTest {
     assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 
     // 先标记删除父节点
-    tx.exec(() -> categoryRepo.get(ids[0]).orElseThrow(IllegalArgumentException::new).setDeleteTime(LocalDateTime.now()));
+    tx.exec(() -> categoryRepo.get(ids[0]).orElseThrow(IllegalArgumentException::new).setDeleted(true));
     // 查询所有
     all = tx.exec(() -> categoryRepo.query(new QueryParameters()));
     // 能查到结果
@@ -210,7 +211,7 @@ class UsualRepositoryCRUDTest {
     assertTrue(o.isPresent());
 
     // 对另一个做同样的标记删除，然后做同样的预期
-    tx.exec(() -> categoryRepo.get(ids[1]).orElseThrow(IllegalArgumentException::new).setDeleteTime(LocalDateTime.now()));
+    tx.exec(() -> categoryRepo.get(ids[1]).orElseThrow(IllegalArgumentException::new).setDeleted(true));
 
     all = tx.exec(() -> categoryRepo.query(new QueryParameters()));
     assertFalse(all.isEmpty());
@@ -224,6 +225,11 @@ class UsualRepositoryCRUDTest {
     assertFalse(page.isEmpty());
     assertFalse(page.stream().anyMatch(c -> "c1".equals(c.getName())));
     assertFalse(page.stream().anyMatch(c -> "c2".equals(c.getName())));
+
+    // 针对删除字段的查询
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters().add(SOFT_DEL_PROP, true)));
+    assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
+    assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 
     // 最后删除测试数据
     tx.exec(() -> {
