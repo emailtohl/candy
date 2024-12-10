@@ -10,10 +10,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import wlei.candy.jpa.auction.entities.Category;
 import wlei.candy.jpa.auction.entities.Item;
+import wlei.candy.jpa.auction.repo.CategoryRepo;
 import wlei.candy.jpa.auction.repo.ItemRepo;
 import wlei.candy.jpa.cache.CacheService;
 import wlei.candy.jpa.tx.TxService;
@@ -38,6 +41,8 @@ class UsualRepositoryCRUDTest {
   DataStub stub;
   @Autowired
   ItemRepo itemRepo;
+  @Autowired
+  CategoryRepo categoryRepo;
   @Autowired
   TxService tx;
   @Autowired
@@ -167,6 +172,66 @@ class UsualRepositoryCRUDTest {
     tx.exec(() -> itemRepo.add(i));
     int count = tx.exec(() -> itemRepo.delete(new QueryParameters().add("name", "foo_bar")));
     assertTrue(count > 0);
+  }
+
+  @Test
+  void testSoftDelete() {
+    Long iid = tx.exec(() -> itemRepo.add(new Item().setName("Hello").setSeller(data.getSeller())).getId());
+    Long[] ids = tx.exec(() -> {
+      Item i = itemRepo.get(iid).orElseThrow(IllegalArgumentException::new);
+      Category c1 = new Category().setName("c1");
+      c1.getItems().add(i);
+      i.getCategories().add(c1);
+      categoryRepo.add(c1);
+
+      Category c2 = new Category().setName("c2").setParent(c1);
+      c2.getItems().add(i);
+      i.getCategories().add(c2);
+      categoryRepo.add(c2);
+      return new Long[]{c1.getId(), c2.getId()};
+    });
+
+    List<Category> all = tx.exec(() -> categoryRepo.findAll());
+    assertFalse(all.isEmpty());
+    assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
+    assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
+
+    // 先标记删除父节点
+    tx.exec(() -> categoryRepo.get(ids[0]).orElseThrow(IllegalArgumentException::new).setDeleteTime(LocalDateTime.now()));
+    // 查询所有
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters()));
+    // 能查到结果
+    assertFalse(all.isEmpty());
+    // 但是标记删除的不会在此结果中
+    assertFalse(all.stream().anyMatch(c -> "c1".equals(c.getName())));
+    assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
+    // 根据id还是能查得到，只是Query查询会排除掉标记删除的结果
+    Optional<Category> o = tx.exec(() -> categoryRepo.get(ids[0]));
+    assertTrue(o.isPresent());
+
+    // 对另一个做同样的标记删除，然后做同样的预期
+    tx.exec(() -> categoryRepo.get(ids[1]).orElseThrow(IllegalArgumentException::new).setDeleteTime(LocalDateTime.now()));
+
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters()));
+    assertFalse(all.isEmpty());
+    assertFalse(all.stream().anyMatch(c -> "c1".equals(c.getName())));
+    assertFalse(all.stream().anyMatch(c -> "c2".equals(c.getName())));
+    o = tx.exec(() -> categoryRepo.get(ids[1]));
+    assertTrue(o.isPresent());
+
+    // 对于分页查询也支持
+    Page<Category> page = tx.exec(() -> categoryRepo.query(new QueryParameters(), Pageable.ofSize(100)));
+    assertFalse(page.isEmpty());
+    assertFalse(page.stream().anyMatch(c -> "c1".equals(c.getName())));
+    assertFalse(page.stream().anyMatch(c -> "c2".equals(c.getName())));
+
+    // 最后删除测试数据
+    tx.exec(() -> {
+      itemRepo.delete(iid);
+      categoryRepo.delete(ids[1]);
+      categoryRepo.delete(ids[0]);
+      return null;
+    });
   }
 
   private Date plusNow(int days) {

@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
+import static wlei.candy.jpa.SoftDeletable.SOFT_DEL_PROP;
+
 /**
  * 创建where谓词的构造器
  *
@@ -70,6 +72,9 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
     BiFunction<CriteriaBuilder, Root<E>, List<Predicate>> supplement = params.getSupplement();
     if (supplement != null) {
       p.addAll(supplement.apply(criteriaBuilder, root));
+    }
+    if (SoftDeletable.class.isAssignableFrom(root.getJavaType())) {
+      p.add(criteriaBuilder.isNull(root.get(SOFT_DEL_PROP)));
     }
     return p;
   }

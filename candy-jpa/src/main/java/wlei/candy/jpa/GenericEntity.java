@@ -26,6 +26,10 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
   public static final String PROP_MOD_VER = "modVer";
 
   private LocalDateTime createTime;
+  private LocalDateTime deleteTime;
+
+
+
   /**
    * 修改的版本号，用于乐观锁
    */
