@@ -6,6 +6,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,10 +28,16 @@ import static wlei.candy.jpa.SoftDeletable.SOFT_DEL_PROP;
 public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I, E>> {
   final CriteriaBuilder criteriaBuilder;
   final Root<E> root;
+  private boolean whereSoftDeleted = false;
 
+  @SuppressWarnings("unchecked")
   public PredicateBuilder(CriteriaBuilder criteriaBuilder, Root<E> root) {
     this.criteriaBuilder = criteriaBuilder;
-    this.root = root;
+    this.root = (Root<E>) Proxy.newProxyInstance(
+        Root.class.getClassLoader(),
+        new Class[]{Root.class},
+        new RootProxy(root)
+    );
   }
 
   /**
@@ -73,10 +82,26 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
     if (supplement != null) {
       predicates.addAll(supplement.apply(criteriaBuilder, root));
     }
-    if (!params.containsKey(SOFT_DEL_PROP) && root.getJavaType() != null && SoftDeletable.class.isAssignableFrom(root.getJavaType())) {
+    if (excludeSoftDeleted(params)) {
       predicates.add(criteriaBuilder.isFalse(root.get(SOFT_DEL_PROP)));
     }
     return predicates;
+  }
+
+  /**
+   * 是否排除掉软删除的记录，如果传入的参数中有针对软删除的查询条件，那就不再做关于软删除的操作，否则就排除已被软删除的记录
+   *
+   * @param params 查询条件
+   * @return 是否排除掉软删除的记录
+   */
+  private boolean excludeSoftDeleted(QueryParameters params) {
+    if (params.containsKey(SOFT_DEL_PROP)) {
+      return false;
+    }
+    if (whereSoftDeleted) {
+      return false;
+    }
+    return root.getJavaType() != null && SoftDeletable.class.isAssignableFrom(root.getJavaType());
   }
 
   /**
@@ -90,4 +115,20 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
     return getPredicates(parameters).stream().reduce(criteriaBuilder::and);
   }
 
+  private class RootProxy implements InvocationHandler {
+    private final Root<E> target;
+
+    public RootProxy(Root<E> target) {
+      this.target = target;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      if (!whereSoftDeleted && "get".equals(method.getName()) && args != null && args.length == 1 && SOFT_DEL_PROP.equals(args[0])) {
+        whereSoftDeleted = true;
+      }
+      return method.invoke(target, args);
+    }
+
+  }
 }

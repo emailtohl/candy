@@ -231,6 +231,10 @@ class UsualRepositoryCRUDTest {
     assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
     assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters().setSupplement((b, r) -> Collections.singletonList(b.equal(r.get(SOFT_DEL_PROP), true)))));
+    assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
+    assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
+
     // 最后删除测试数据
     tx.exec(() -> {
       itemRepo.delete(iid);
