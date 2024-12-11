@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
 import static org.junit.jupiter.api.Assertions.*;
 import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
 import static wlei.candy.jpa.GenericEntity.PROP_ID;
-import static wlei.candy.jpa.SoftDeletable.PROP_SOFT_DEL;
+import static wlei.candy.jpa.SoftDeletable.PROP_DELETE_TIME;
 
 // SpringExtension与Junit 5 jupiter 的@ExtendWith注释一起使用，用于集成SpringTestContext和Junit5 Jupiter测试
 @ExtendWith(SpringExtension.class)
@@ -197,8 +197,10 @@ class UsualRepositoryCRUDTest {
     assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
     assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 
+    LocalDateTime deleteTime = LocalDateTime.of(2024, 12, 11, 20, 2, 11);
+
     // 先标记删除父节点
-    tx.exec(() -> categoryRepo.get(ids[0]).orElseThrow(IllegalArgumentException::new).setDeleted(true));
+    tx.exec(() -> categoryRepo.get(ids[0]).orElseThrow(IllegalArgumentException::new).setDeleteTime(deleteTime));
     // 查询所有
     all = tx.exec(() -> categoryRepo.query(new QueryParameters()));
     // 能查到结果
@@ -211,7 +213,7 @@ class UsualRepositoryCRUDTest {
     assertTrue(o.isPresent());
 
     // 对另一个做同样的标记删除，然后做同样的预期
-    tx.exec(() -> categoryRepo.get(ids[1]).orElseThrow(IllegalArgumentException::new).setDeleted(true));
+    tx.exec(() -> categoryRepo.get(ids[1]).orElseThrow(IllegalArgumentException::new).setDeleteTime(deleteTime));
 
     all = tx.exec(() -> categoryRepo.query(new QueryParameters()));
     assertFalse(all.isEmpty());
@@ -227,11 +229,15 @@ class UsualRepositoryCRUDTest {
     assertFalse(page.stream().anyMatch(c -> "c2".equals(c.getName())));
 
     // 针对删除字段的查询
-    all = tx.exec(() -> categoryRepo.query(new QueryParameters().add(PROP_SOFT_DEL, true)));
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters().add(PROP_DELETE_TIME, deleteTime)));
     assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
     assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 
-    all = tx.exec(() -> categoryRepo.query(new QueryParameters().setSupplement((b, r) -> Collections.singletonList(b.equal(r.get(PROP_SOFT_DEL), true)))));
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters().setSupplement((b, r) -> Collections.singletonList(b.equal(r.get(PROP_DELETE_TIME), deleteTime)))));
+    assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
+    assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
+
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters().setSupplement((b, r) -> Collections.singletonList(b.lessThanOrEqualTo(r.get(PROP_DELETE_TIME), LocalDateTime.of(2024, 12, 11, 21, 2, 11))))));
     assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
     assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 

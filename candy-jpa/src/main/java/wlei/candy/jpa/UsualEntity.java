@@ -3,6 +3,8 @@ package wlei.candy.jpa;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 /**
  * 常用的一种实体定义类
  * 本类的id定义成Long，且基于属性映射的方式
@@ -25,25 +27,25 @@ public class UsualEntity<E extends UsualEntity<E>> extends GenericEntity<Long, E
   private Long id;
 
   @Basic
-  private boolean deleted;
+  private LocalDateTime deleteTime;
 
   public UsualEntity() {
   }
 
   public UsualEntity(E src) {
     super(src);
-    this.setDeleted(src.isDeleted());
+    this.setDeleteTime(src.getDeleteTime());
   }
 
   public E copyBasicFrom(UsualEntity<? extends UsualEntity<?>> src) {
     super.copyBasicFrom(src);
-    this.setDeleted(src.isDeleted());
+    this.setDeleteTime(src.getDeleteTime());
     return (E) this;
   }
 
   @Override
   public String[] includeBasicPropertyNames(String... properties) {
-    String[] src = super.includeBasicPropertyNames(PROP_SOFT_DEL);
+    String[] src = super.includeBasicPropertyNames(PROP_DELETE_TIME);
     return appendPropertyNames(src, properties);
   }
 
@@ -66,13 +68,13 @@ public class UsualEntity<E extends UsualEntity<E>> extends GenericEntity<Long, E
   }
 
   @Override
-  public boolean isDeleted() {
-    return deleted;
+  public LocalDateTime getDeleteTime() {
+    return deleteTime;
   }
 
   @Override
-  public E setDeleted(boolean deleted) {
-    this.deleted = deleted;
+  public E setDeleteTime(LocalDateTime deleteTime) {
+    this.deleteTime = deleteTime;
     return (E) this;
   }
 }

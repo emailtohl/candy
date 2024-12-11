@@ -21,6 +21,6 @@ class GenericEntityTest {
         .setName("foo").setDescription("desc");
 
     String[] props = item.includeBasicPropertyNames("name");
-    assertArrayEquals(new String[]{"id", "createTime", "modVer", "deleted", "name"}, props);
+    assertArrayEquals(new String[]{"id", "createTime", "modVer", "deleteTime", "name"}, props);
   }
 }

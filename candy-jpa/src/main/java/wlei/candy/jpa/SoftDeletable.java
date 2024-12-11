@@ -1,6 +1,7 @@
 package wlei.candy.jpa;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 轻量支持软删除，仅在Query查询时排除已软删除的记录，至于对象的级联加载在Hibernate框架层完成，故不能实现
@@ -9,9 +10,9 @@ import java.io.Serializable;
  * Date: 2024/12/10
  */
 public interface SoftDeletable<I extends Serializable, E extends GenericEntity<I, E>> {
-  String PROP_SOFT_DEL = "deleted";
+  String PROP_DELETE_TIME = "deleteTime";
 
-  boolean isDeleted();
+  LocalDateTime getDeleteTime();
 
-  E setDeleted(boolean deleted);
+  E setDeleteTime(LocalDateTime deleteTime);
 }

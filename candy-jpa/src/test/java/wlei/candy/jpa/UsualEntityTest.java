@@ -6,6 +6,8 @@ import wlei.candy.jpa.auction.entities.Item;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static wlei.candy.jpa.GenericEntity.*;
+import static wlei.candy.jpa.SoftDeletable.PROP_DELETE_TIME;
 
 /**
  * Author: HeLei
@@ -15,6 +17,7 @@ class UsualEntityTest {
 
   @Test
   void copyBasicFrom() {
+    LocalDateTime deleteTime = LocalDateTime.of(2024, 12, 11, 20, 2, 11);
     Item item = new Item()
         .setId(1L)
         .setCreateTime(LocalDateTime.now()).setModVer(1)
@@ -26,7 +29,7 @@ class UsualEntityTest {
     assertNull(other.getName());
     assertNull(other.getDescription());
 
-    item.setDeleted(true).setModVer(2);
+    item.setDeleteTime(deleteTime).setModVer(2);
 
     other = new Item().copyBasicFrom(item);
     assertEquals(1L, other.getId());
@@ -34,7 +37,7 @@ class UsualEntityTest {
     assertNotNull(other.getCreateTime());
     assertNull(other.getName());
     assertNull(other.getDescription());
-    assertTrue(other.isDeleted());
+    assertNotNull(other.getDeleteTime());
   }
 
   @Test
@@ -45,6 +48,6 @@ class UsualEntityTest {
         .setName("foo").setDescription("desc");
 
     String[] props = item.includeBasicPropertyNames("name");
-    assertArrayEquals(new String[]{"id", "createTime", "modVer", "deleted", "name"}, props);
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_DELETE_TIME, "name"}, props);
   }
 }

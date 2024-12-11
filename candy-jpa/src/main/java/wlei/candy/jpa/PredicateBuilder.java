@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import static wlei.candy.jpa.SoftDeletable.PROP_SOFT_DEL;
+import static wlei.candy.jpa.SoftDeletable.PROP_DELETE_TIME;
 
 /**
  * 创建where谓词的构造器
@@ -83,7 +83,7 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
       predicates.addAll(supplement.apply(criteriaBuilder, root));
     }
     if (excludeSoftDeleted(params)) {
-      predicates.add(criteriaBuilder.isFalse(root.get(PROP_SOFT_DEL)));
+      predicates.add(criteriaBuilder.isNull(root.get(PROP_DELETE_TIME)));
     }
     return predicates;
   }
@@ -95,7 +95,7 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
    * @return 是否排除掉软删除的记录
    */
   private boolean excludeSoftDeleted(QueryParameters params) {
-    if (params.containsKey(PROP_SOFT_DEL)) {
+    if (params.containsKey(PROP_DELETE_TIME)) {
       return false;
     }
     if (whereSoftDeleted) {
@@ -124,7 +124,7 @@ public class PredicateBuilder<I extends Serializable, E extends GenericEntity<I,
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-      if (!whereSoftDeleted && "get".equals(method.getName()) && args != null && args.length == 1 && PROP_SOFT_DEL.equals(args[0])) {
+      if (!whereSoftDeleted && "get".equals(method.getName()) && args != null && args.length == 1 && PROP_DELETE_TIME.equals(args[0])) {
         whereSoftDeleted = true;
       }
       return method.invoke(target, args);
