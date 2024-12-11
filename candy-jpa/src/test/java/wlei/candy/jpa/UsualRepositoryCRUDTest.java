@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
 import static org.junit.jupiter.api.Assertions.*;
 import static wlei.candy.jpa.GenericEntity.PROP_CREATE_TIME;
 import static wlei.candy.jpa.GenericEntity.PROP_ID;
-import static wlei.candy.jpa.SoftDeletable.SOFT_DEL_PROP;
+import static wlei.candy.jpa.SoftDeletable.PROP_SOFT_DEL;
 
 // SpringExtension与Junit 5 jupiter 的@ExtendWith注释一起使用，用于集成SpringTestContext和Junit5 Jupiter测试
 @ExtendWith(SpringExtension.class)
@@ -227,11 +227,11 @@ class UsualRepositoryCRUDTest {
     assertFalse(page.stream().anyMatch(c -> "c2".equals(c.getName())));
 
     // 针对删除字段的查询
-    all = tx.exec(() -> categoryRepo.query(new QueryParameters().add(SOFT_DEL_PROP, true)));
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters().add(PROP_SOFT_DEL, true)));
     assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
     assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 
-    all = tx.exec(() -> categoryRepo.query(new QueryParameters().setSupplement((b, r) -> Collections.singletonList(b.equal(r.get(SOFT_DEL_PROP), true)))));
+    all = tx.exec(() -> categoryRepo.query(new QueryParameters().setSupplement((b, r) -> Collections.singletonList(b.equal(r.get(PROP_SOFT_DEL), true)))));
     assertTrue(all.stream().anyMatch(c -> "c1".equals(c.getName())));
     assertTrue(all.stream().anyMatch(c -> "c2".equals(c.getName())));
 

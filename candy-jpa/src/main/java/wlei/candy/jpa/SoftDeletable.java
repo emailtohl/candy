@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Date: 2024/12/10
  */
 public interface SoftDeletable<I extends Serializable, E extends GenericEntity<I, E>> {
-  String SOFT_DEL_PROP = "deleted";
+  String PROP_SOFT_DEL = "deleted";
 
   boolean isDeleted();
 

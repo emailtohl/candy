@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static wlei.candy.jpa.GenericEntity.*;
+import static wlei.candy.jpa.SoftDeletable.PROP_SOFT_DEL;
 import static wlei.candy.jpa.envers.Auditability.*;
 
 class UsualAuditableEntityTest {
@@ -51,8 +52,8 @@ class UsualAuditableEntityTest {
     KeyAttribute[] keyAttributes = KeyAttribute.parse(c);
     assertEquals(1, keyAttributes.length);
 
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY}, c.includeBasicPropertyNames());
-    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY, "password"}, c.includeBasicPropertyNames("password"));
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_SOFT_DEL, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY}, c.includeBasicPropertyNames());
+    assertArrayEquals(new String[]{PROP_ID, PROP_CREATE_TIME, PROP_MOD_VER, PROP_SOFT_DEL, PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY, "password"}, c.includeBasicPropertyNames("password"));
   }
 
   @Test
@@ -125,7 +126,7 @@ class UsualAuditableEntityTest {
   void includeBasicPropertyNames() {
     Item item = new Item();
     String[] props = item.includeBasicPropertyNames("name");
-    assertArrayEquals(new String[]{"id", "createTime", "modVer", "createBy", "updateTime", "updateBy", "name"}, props);
+    assertArrayEquals(new String[]{"id", "createTime", "modVer", "deleted", "createBy", "updateTime", "updateBy", "name"}, props);
   }
 
   private static class SomeEntity extends UsualAuditableEntity<SomeEntity> {

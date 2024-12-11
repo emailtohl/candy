@@ -3,7 +3,6 @@ package wlei.candy.jpa.auction.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import wlei.candy.jpa.SoftDeletable;
 import wlei.candy.jpa.UsualEntity;
 
 import java.util.HashSet;
@@ -12,12 +11,10 @@ import java.util.Set;
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"})
 @Table(name = "AUCTION_CATEGORY")
 @Entity
-public class Category extends UsualEntity<Category> implements SoftDeletable<Long, Category> {
+public class Category extends UsualEntity<Category> {
 
   @NotNull
   protected String name;
-
-  protected boolean deleted;
 
   // The root of the tree has no parent, column has to be nullable!
   @ManyToOne
@@ -78,14 +75,4 @@ public class Category extends UsualEntity<Category> implements SoftDeletable<Lon
     return this;
   }
 
-  @Override
-  public boolean isDeleted() {
-    return deleted;
-  }
-
-  @Override
-  public Category setDeleted(boolean deleted) {
-    this.deleted = deleted;
-    return this;
-  }
 }

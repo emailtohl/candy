@@ -50,7 +50,6 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
     return this.setCreateBy(src.getCreateBy())
         .setUpdateTime(src.getUpdateTime())
         .setUpdateBy(src.getUpdateBy());
-
   }
 
   /**
@@ -62,10 +61,7 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
   @Override
   public String[] includeBasicPropertyNames(String... properties) {
     String[] src = super.includeBasicPropertyNames(PROP_CREATE_BY, PROP_UPDATE_TIME, PROP_UPDATE_BY);
-    String[] result = new String[src.length + properties.length];
-    System.arraycopy(src, 0, result, 0, src.length);
-    System.arraycopy(properties, 0, result, src.length, properties.length);
-    return result;
+    return appendPropertyNames(src, properties);
   }
 
   @Override

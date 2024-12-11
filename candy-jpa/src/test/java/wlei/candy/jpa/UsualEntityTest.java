@@ -25,5 +25,26 @@ class UsualEntityTest {
     assertNotNull(other.getCreateTime());
     assertNull(other.getName());
     assertNull(other.getDescription());
+
+    item.setDeleted(true).setModVer(2);
+
+    other = new Item().copyBasicFrom(item);
+    assertEquals(1L, other.getId());
+    assertEquals(2, other.getModVer());
+    assertNotNull(other.getCreateTime());
+    assertNull(other.getName());
+    assertNull(other.getDescription());
+    assertTrue(other.isDeleted());
+  }
+
+  @Test
+  void includeBasicPropertyNames() {
+    Item item = new Item()
+        .setId(1L)
+        .setCreateTime(LocalDateTime.now()).setModVer(1)
+        .setName("foo").setDescription("desc");
+
+    String[] props = item.includeBasicPropertyNames("name");
+    assertArrayEquals(new String[]{"id", "createTime", "modVer", "deleted", "name"}, props);
   }
 }
