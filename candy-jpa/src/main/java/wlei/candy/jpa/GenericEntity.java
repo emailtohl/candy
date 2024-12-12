@@ -60,6 +60,7 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
    *
    * @return id
    */
+  @Id
   public abstract I getId();
 
   public abstract E setId(I id);
