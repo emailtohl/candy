@@ -84,10 +84,10 @@ class TreeNodeTest {
 
   @Test
   void flip() {
-    List<TreeNode> treeNodes = TreeNode.build(menus);
+    List<TreeNode<Menu>> treeNodes = TreeNode.build(menus);
     assertEquals(4, treeNodes.size());
 
-    List<SelfReference> bfs = TreeNode.bfs(treeNodes);
+    List<Menu> bfs = TreeNode.bfs(treeNodes);
     assertEquals(menus.size(), bfs.size());
   }
 

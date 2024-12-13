@@ -8,9 +8,9 @@ import java.util.*;
  * Author: HeLei
  * Date: 2024/12/13
  */
-public class TreeNode {
-  private SelfReference node;
-  private List<TreeNode> children;
+public class TreeNode<T extends SelfReference> {
+  private T node;
+  private List<TreeNode<T>> children;
 
   /**
    * 将自引用的集合组装成树形结构
@@ -18,14 +18,16 @@ public class TreeNode {
    * @param src 自引用集合
    * @return 树形结构
    */
-  public static List<TreeNode> build(List<? extends SelfReference> src) {
-    List<TreeNode> tmp = new ArrayList<>();
-    for (SelfReference sr : src) {
-      tmp.add(new TreeNode().setNode(sr));
+  public static <T extends SelfReference> List<TreeNode<T>> build(List<T> src) {
+    List<TreeNode<T>> tmp = new ArrayList<>();
+    for (T sr : src) {
+      TreeNode<T> n = new TreeNode<>();
+      n.setNode(sr);
+      tmp.add(n);
     }
     Set<String> keys = new HashSet<>();
-    for (TreeNode n1 : tmp) {
-      for (TreeNode n2 : tmp) {
+    for (TreeNode<T> n1 : tmp) {
+      for (TreeNode<T> n2 : tmp) {
         if (!Objects.equals(n1.getNode().parentKey(), n2.getNode().key())) {
           continue;
         }
@@ -37,8 +39,8 @@ public class TreeNode {
         break;
       }
     }
-    List<TreeNode> result = new ArrayList<>();
-    for (TreeNode n : tmp) {
+    List<TreeNode<T>> result = new ArrayList<>();
+    for (TreeNode<T> n : tmp) {
       if (keys.contains(n.getNode().key())) {
         continue;
       }
@@ -53,14 +55,15 @@ public class TreeNode {
    * @param treeNodes 树形结构
    * @return 广度优先返回自引用集合
    */
-  public static List<SelfReference> bfs(List<TreeNode> treeNodes) {
-    List<SelfReference> result = new ArrayList<>();
-    List<TreeNode> tmp1 = new ArrayList<>(treeNodes);
+  @SuppressWarnings("unchecked")
+  public static <T extends SelfReference> List<T> bfs(List<TreeNode<T>> treeNodes) {
+    List<T> result = new ArrayList<>();
+    List<TreeNode<T>> tmp1 = new ArrayList<>(treeNodes);
     while (!tmp1.isEmpty()) {
-      List<TreeNode> tmp2 = new ArrayList<>(tmp1);
+      List<TreeNode<T>> tmp2 = new ArrayList<>(tmp1);
       tmp1 = new ArrayList<>();
-      for (TreeNode n : tmp2) {
-        result.add(n.getNode());
+      for (TreeNode<T> n : tmp2) {
+        result.add((T) n.getNode());
         if (n.getChildren() != null) {
           tmp1.addAll(n.getChildren());
         }
@@ -73,16 +76,16 @@ public class TreeNode {
     return node;
   }
 
-  public TreeNode setNode(SelfReference node) {
+  public TreeNode<T> setNode(T node) {
     this.node = node;
     return this;
   }
 
-  public List<TreeNode> getChildren() {
+  public List<TreeNode<T>> getChildren() {
     return children;
   }
 
-  public TreeNode setChildren(List<TreeNode> children) {
+  public TreeNode<T> setChildren(List<TreeNode<T>> children) {
     this.children = children;
     return this;
   }
