@@ -9,6 +9,7 @@ import java.util.*;
  * Date: 2024/12/13
  */
 public class TreeNode<T extends SelfReference> {
+  private String key;
   private T node;
   private List<TreeNode<T>> children;
 
@@ -16,7 +17,11 @@ public class TreeNode<T extends SelfReference> {
   }
 
   public TreeNode(T node) {
+    if (node == null) {
+      return;
+    }
     this.node = node;
+    this.key = node.key();
   }
 
   /**
@@ -28,7 +33,7 @@ public class TreeNode<T extends SelfReference> {
   public static <T extends SelfReference> List<TreeNode<T>> build(List<T> src) {
     List<TreeNode<T>> tmp = new ArrayList<>();
     for (T sr : src) {
-      tmp.add(new TreeNode<T>(sr));
+      tmp.add(new TreeNode<>(sr));
     }
     Set<String> keys = new HashSet<>();
     for (TreeNode<T> n1 : tmp) {
@@ -75,6 +80,19 @@ public class TreeNode<T extends SelfReference> {
       }
     }
     return result;
+  }
+
+  @Override
+  public String toString() {
+    return key;
+  }
+
+  public String getKey() {
+    return key;
+  }
+
+  public void setKey(String key) {
+    this.key = key;
   }
 
   public T getNode() {
