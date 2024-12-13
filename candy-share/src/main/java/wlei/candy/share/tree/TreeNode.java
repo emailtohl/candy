@@ -12,6 +12,13 @@ public class TreeNode<T extends SelfReference> {
   private T node;
   private List<TreeNode<T>> children;
 
+  public TreeNode() {
+  }
+
+  public TreeNode(T node) {
+    this.node = node;
+  }
+
   /**
    * 将自引用的集合组装成树形结构
    *
@@ -21,9 +28,7 @@ public class TreeNode<T extends SelfReference> {
   public static <T extends SelfReference> List<TreeNode<T>> build(List<T> src) {
     List<TreeNode<T>> tmp = new ArrayList<>();
     for (T sr : src) {
-      TreeNode<T> n = new TreeNode<>();
-      n.setNode(sr);
-      tmp.add(n);
+      tmp.add(new TreeNode<T>(sr));
     }
     Set<String> keys = new HashSet<>();
     for (TreeNode<T> n1 : tmp) {
@@ -63,7 +68,7 @@ public class TreeNode<T extends SelfReference> {
       List<TreeNode<T>> tmp2 = new ArrayList<>(tmp1);
       tmp1 = new ArrayList<>();
       for (TreeNode<T> n : tmp2) {
-        result.add((T) n.getNode());
+        result.add(n.getNode());
         if (n.getChildren() != null) {
           tmp1.addAll(n.getChildren());
         }
@@ -72,21 +77,19 @@ public class TreeNode<T extends SelfReference> {
     return result;
   }
 
-  public SelfReference getNode() {
+  public T getNode() {
     return node;
   }
 
-  public TreeNode<T> setNode(T node) {
+  public void setNode(T node) {
     this.node = node;
-    return this;
   }
 
   public List<TreeNode<T>> getChildren() {
     return children;
   }
 
-  public TreeNode<T> setChildren(List<TreeNode<T>> children) {
+  public void setChildren(List<TreeNode<T>> children) {
     this.children = children;
-    return this;
   }
 }
