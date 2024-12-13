@@ -7,7 +7,11 @@ package wlei.candy.share.tree;
  * Date: 2024/12/13
  */
 public interface SelfReference {
-  String key();
+  String getKey();
 
-  String parentKey();
+  void setKey(String key);
+
+  String getParentKey();
+
+  void setParentKey(String key);
 }

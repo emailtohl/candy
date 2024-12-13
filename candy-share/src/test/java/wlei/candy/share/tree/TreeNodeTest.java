@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Author: HeLei
@@ -91,4 +92,24 @@ class TreeNodeTest {
     assertEquals(menus.size(), bfs.size());
   }
 
+  @Test
+  void bindParentKey() {
+    List<TreeNode<Menu>> treeNodes = TreeNode.build(menus);
+    removeParentKey(treeNodes);
+    for (TreeNode<Menu> treeNode : treeNodes) {
+      treeNode.bindParentKey();
+    }
+    List<Menu> bfs = TreeNode.bfs(treeNodes);
+    assertTrue(bfs.stream().anyMatch(n -> n.getParentKey() != null));
+  }
+
+  private void removeParentKey(List<TreeNode<Menu>> treeNodes) {
+    if (treeNodes == null) {
+      return;
+    }
+    for (TreeNode<Menu> treeNode : treeNodes) {
+      treeNode.getNode().setParentKey(null);
+      removeParentKey(treeNode.getChildren());
+    }
+  }
 }

@@ -14,18 +14,31 @@ class Menu implements SelfReference {
   private Menu parent;
 
   @Override
-  public String key() {
+  public String getKey() {
     return id;
   }
 
   @Override
-  public String parentKey() {
-    return Optional.ofNullable(parent).map(Menu::key).orElse(null);
+  public void setKey(String key) {
+    id = key;
+  }
+
+  @Override
+  public String getParentKey() {
+    return Optional.ofNullable(parent).map(Menu::getKey).orElse(null);
+  }
+
+  @Override
+  public void setParentKey(String key) {
+    if (parent == null) {
+      parent = new Menu();
+    }
+    parent.setKey(key);
   }
 
   @Override
   public String toString() {
-    return String.format("%s:%s:%s", key(), name, parentKey());
+    return String.format("%s:%s:%s", getKey(), name, getParentKey());
   }
 
   public String getId() {
