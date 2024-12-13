@@ -12,6 +12,12 @@ public class TreeNode {
   private SelfReference node;
   private List<TreeNode> children;
 
+  /**
+   * 将自引用的集合组装成树形结构
+   *
+   * @param src 自引用集合
+   * @return 树形结构
+   */
   public static List<TreeNode> build(List<? extends SelfReference> src) {
     List<TreeNode> tmp = new ArrayList<>();
     for (SelfReference sr : src) {
@@ -37,6 +43,28 @@ public class TreeNode {
         continue;
       }
       result.add(n);
+    }
+    return result;
+  }
+
+  /**
+   * 广度优先返回自引用集合，如此便于梳理依赖关系
+   *
+   * @param treeNodes 树形结构
+   * @return 广度优先返回自引用集合
+   */
+  public static List<SelfReference> bfs(List<TreeNode> treeNodes) {
+    List<SelfReference> result = new ArrayList<>();
+    List<TreeNode> tmp1 = new ArrayList<>(treeNodes);
+    while (!tmp1.isEmpty()) {
+      List<TreeNode> tmp2 = new ArrayList<>(tmp1);
+      tmp1 = new ArrayList<>();
+      for (TreeNode n : tmp2) {
+        result.add(n.getNode());
+        if (n.getChildren() != null) {
+          tmp1.addAll(n.getChildren());
+        }
+      }
     }
     return result;
   }

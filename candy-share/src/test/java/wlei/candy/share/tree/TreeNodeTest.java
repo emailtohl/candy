@@ -1,20 +1,24 @@
 package wlei.candy.share.tree;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Author: HeLei
  * Date: 2024/12/13
  */
 class TreeNodeTest {
+  private List<Menu> menus;
 
-  @Test
-  void flip() {
+  @BeforeEach
+  void setUp() {
+    menus = new ArrayList<>();
     Menu m1 = new Menu().setId("1").setName("前菜");
     Menu m11 = new Menu().setId("11").setName("沙拉").setParent(m1);
     Menu m12 = new Menu().setId("12").setName("汤类").setParent(m1);
@@ -47,7 +51,6 @@ class TreeNodeTest {
     Menu m421 = new Menu().setId("421").setName("红酒").setParent(m42);
     Menu m422 = new Menu().setId("422").setName("啤酒").setParent(m42);
 
-    List<Menu> menus = new ArrayList<>();
     menus.add(m1);
     menus.add(m11);
     menus.add(m12);
@@ -77,7 +80,15 @@ class TreeNodeTest {
     menus.add(m421);
     menus.add(m422);
     Collections.shuffle(menus);
-    List<TreeNode> treeNodes = TreeNode.build(menus);
-    Assertions.assertEquals(4, treeNodes.size());
   }
+
+  @Test
+  void flip() {
+    List<TreeNode> treeNodes = TreeNode.build(menus);
+    assertEquals(4, treeNodes.size());
+
+    List<SelfReference> bfs = TreeNode.bfs(treeNodes);
+    assertEquals(menus.size(), bfs.size());
+  }
+
 }
