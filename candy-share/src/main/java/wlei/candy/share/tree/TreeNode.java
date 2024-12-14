@@ -8,7 +8,7 @@ import java.util.List;
  * Author: HeLei
  * Date: 2024/12/13
  */
-public class TreeNode<T extends SelfReference> {
+public class TreeNode<T extends SelfReference<T>> {
   private String key;
   private String parentKey;
   private T node;
@@ -32,6 +32,17 @@ public class TreeNode<T extends SelfReference> {
     for (TreeNode<T> child : children) {
       child.setParentKey(key);
       child.bindParentKey();
+    }
+  }
+
+  void parentIfAbsent() {
+    if (children == null) {
+      return;
+    }
+    for (TreeNode<T> child : children) {
+      if (child.getNode().getParent() == null) {
+        child.getNode().setParent(getNode());
+      }
     }
   }
 

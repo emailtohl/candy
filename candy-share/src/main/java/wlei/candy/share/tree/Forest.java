@@ -3,12 +3,13 @@ package wlei.candy.share.tree;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Author: HeLei
  * Date: 2024/12/14
  */
-public class Forest<T extends SelfReference> extends LinkedList<TreeNode<T>> {
+public class Forest<T extends SelfReference<T>> extends LinkedList<TreeNode<T>> {
 
   public Forest() {
   }
@@ -52,10 +53,13 @@ public class Forest<T extends SelfReference> extends LinkedList<TreeNode<T>> {
    *
    * @return 广度优先返回自引用集合
    */
-  public List<T> breadthFirst() {
-    List<T> result = new LinkedList<>();
-    bfs(treeNode -> result.add(treeNode.getNode()));
-    return result;
+  public List<T> allNodes() {
+    List<TreeNode<T>> nodes = new LinkedList<>();
+    bfs(nodes::add);
+    for (TreeNode<T> tn : nodes) {
+      tn.parentIfAbsent();
+    }
+    return nodes.stream().map(TreeNode::getNode).collect(Collectors.toList());
   }
 
   private void bfs(Consumer<TreeNode<T>> consumer) {

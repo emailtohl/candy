@@ -6,9 +6,10 @@ package wlei.candy.share.tree;
  * Author: HeLei
  * Date: 2024/12/13
  */
-public interface SelfReference {
+public interface SelfReference<T extends SelfReference<T>> {
   String getKey();
 
-  SelfReference getParent();
+  T getParent();
 
+  T setParent(T parent);
 }

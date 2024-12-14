@@ -4,7 +4,7 @@ package wlei.candy.share.tree;
  * Author: HeLei
  * Date: 2024/12/13
  */
-class Menu implements SelfReference {
+class Menu implements SelfReference<Menu> {
   private String id;
 
   private String name;
@@ -39,10 +39,12 @@ class Menu implements SelfReference {
     return this;
   }
 
+  @Override
   public Menu getParent() {
     return parent;
   }
 
+  @Override
   public Menu setParent(Menu parent) {
     this.parent = parent;
     return this;

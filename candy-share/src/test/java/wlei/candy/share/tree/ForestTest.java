@@ -88,8 +88,8 @@ class ForestTest {
     Forest<Menu> forest = new Forest<>(menus);
     assertEquals(4, forest.size());
 
-    List<Menu> bfs = forest.breadthFirst();
-    assertEquals(menus.size(), bfs.size());
+    List<Menu> allNodes = forest.allNodes();
+    assertEquals(menus.size(), allNodes.size());
   }
 
   @Test
@@ -97,9 +97,9 @@ class ForestTest {
     Forest<Menu> forest = new Forest<>(menus);
     removeKey(new ArrayList<>(forest));
     forest.initKey();
-    List<Menu> bfs = forest.breadthFirst();
-    assertEquals(menus.size(), bfs.size());
-//    assertTrue(bfs.stream().anyMatch(m -> m.getParent() != null));
+    List<Menu> allNodes = forest.allNodes();
+    assertEquals(menus.size(), allNodes.size());
+    assertTrue(allNodes.stream().anyMatch(m -> m.getParent() != null));
   }
 
   private void removeKey(List<TreeNode<Menu>> treeNodes) {
