@@ -221,6 +221,7 @@
           <source>${java.version}</source>
           <target>${java.version}</target>
           <encoding>UTF-8</encoding>
+          <showWarnings>false</showWarnings>
         </configuration>
       </plugin>
       <!-- junit5测试 -->
