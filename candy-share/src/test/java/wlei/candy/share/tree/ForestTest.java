@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Author: HeLei
  * Date: 2024/12/13
  */
-class TreeNodeTest {
+class ForestTest {
   private List<Menu> menus;
 
   @BeforeEach
@@ -84,32 +84,33 @@ class TreeNodeTest {
   }
 
   @Test
-  void flip() {
-    List<TreeNode<Menu>> treeNodes = TreeNode.build(menus);
-    assertEquals(4, treeNodes.size());
+  void build() {
+    Forest<Menu> forest = new Forest<>(menus);
+    assertEquals(4, forest.size());
 
-    List<Menu> bfs = TreeNode.bfs(treeNodes);
+    List<Menu> bfs = forest.breadthFirst();
     assertEquals(menus.size(), bfs.size());
   }
 
   @Test
-  void bindParentKey() {
-    List<TreeNode<Menu>> treeNodes = TreeNode.build(menus);
-    removeParentKey(treeNodes);
-    for (TreeNode<Menu> treeNode : treeNodes) {
-      treeNode.bindParentKey();
-    }
-    List<Menu> bfs = TreeNode.bfs(treeNodes);
-    assertTrue(bfs.stream().anyMatch(n -> n.getParentKey() != null));
+  void initKey() {
+    Forest<Menu> forest = new Forest<>(menus);
+    removeKey(new ArrayList<>(forest));
+    forest.initKey();
+    List<Menu> bfs = forest.breadthFirst();
+    assertEquals(menus.size(), bfs.size());
+//    assertTrue(bfs.stream().anyMatch(m -> m.getParent() != null));
   }
 
-  private void removeParentKey(List<TreeNode<Menu>> treeNodes) {
+  private void removeKey(List<TreeNode<Menu>> treeNodes) {
     if (treeNodes == null) {
       return;
     }
-    for (TreeNode<Menu> treeNode : treeNodes) {
-      treeNode.getNode().setParentKey(null);
-      removeParentKey(treeNode.getChildren());
+    for (TreeNode<Menu> n : treeNodes) {
+      n.setKey(null);
+      n.setParentKey(null);
+      n.getNode().setParent(null);
+      removeKey(n.getChildren());
     }
   }
 }

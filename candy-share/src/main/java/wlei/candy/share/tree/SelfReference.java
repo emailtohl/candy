@@ -9,9 +9,6 @@ package wlei.candy.share.tree;
 public interface SelfReference {
   String getKey();
 
-  void setKey(String key);
+  SelfReference getParent();
 
-  String getParentKey();
-
-  void setParentKey(String key);
 }

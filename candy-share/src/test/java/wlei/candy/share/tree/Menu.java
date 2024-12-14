@@ -1,7 +1,5 @@
 package wlei.candy.share.tree;
 
-import java.util.Optional;
-
 /**
  * Author: HeLei
  * Date: 2024/12/13
@@ -19,26 +17,8 @@ class Menu implements SelfReference {
   }
 
   @Override
-  public void setKey(String key) {
-    id = key;
-  }
-
-  @Override
-  public String getParentKey() {
-    return Optional.ofNullable(parent).map(Menu::getKey).orElse(null);
-  }
-
-  @Override
-  public void setParentKey(String key) {
-    if (parent == null) {
-      parent = new Menu();
-    }
-    parent.setKey(key);
-  }
-
-  @Override
   public String toString() {
-    return String.format("%s:%s:%s", getKey(), name, getParentKey());
+    return String.format("%s:%s", getKey(), name);
   }
 
   public String getId() {
