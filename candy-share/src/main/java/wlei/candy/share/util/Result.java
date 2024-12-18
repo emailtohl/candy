@@ -26,6 +26,10 @@ public class Result {
    * 文本信息
    */
   private String text;
+  /**
+   * 数据结构
+   */
+  private Object data;
 
   public static Result ofId(long id) {
     Result result = new Result();
@@ -54,6 +58,13 @@ public class Result {
   public static Result ofText(String text) {
     Result result = new Result();
     result.text = text;
+    return result;
+  }
+
+  public static Result withData(Object data) {
+    Result result = new Result();
+    result.success = true;
+    result.data = data;
     return result;
   }
 
@@ -90,6 +101,15 @@ public class Result {
 
   public Result setText(String text) {
     this.text = text;
+    return this;
+  }
+
+  public Object getData() {
+    return data;
+  }
+
+  public Result setData(Object data) {
+    this.data = data;
     return this;
   }
 }
