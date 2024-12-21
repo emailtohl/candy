@@ -5,15 +5,17 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.envers.Audited;
 import wlei.candy.jpa.envers.UsualAuditableEntity;
+import wlei.candy.share.tree.SelfReference;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"})
 @Audited
 @Table(name = "AUCTION_CATEGORY")
 @Entity
-public class Category extends UsualAuditableEntity<Category> {
+public class Category extends UsualAuditableEntity<Category> implements SelfReference<Category> {
 
   @NotNull
   protected String name;
@@ -57,6 +59,11 @@ public class Category extends UsualAuditableEntity<Category> {
   public Category setName(String name) {
     this.name = name;
     return this;
+  }
+
+  @Override
+  public String getKey() {
+    return Optional.ofNullable(getId()).map(String::valueOf).orElse(null);
   }
 
   public Category getParent() {

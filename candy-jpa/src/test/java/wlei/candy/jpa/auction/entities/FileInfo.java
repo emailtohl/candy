@@ -24,6 +24,17 @@ public class FileInfo extends GenericEntity<String, FileInfo> {
   private String encodeData;
 
   private String signature;
+  // 文件类型，未知则存储: application/octet-stream
+  // example:
+  // word文档xlsx: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+  // excel文档xlsx: application/vnd.ms-excel
+  // json: application/json
+  // 表单: application/x-www-form-urlencoded
+  // 上传文件: multipart/form-data
+  // 文本: text/plain
+  // png文件: image/png
+  // pdf: application/pdf
+  private String contentType;
 
   public FileInfo withData(byte[] data) {
     Base64.Encoder encoder = Base64.getEncoder();
@@ -89,6 +100,15 @@ public class FileInfo extends GenericEntity<String, FileInfo> {
 
   public FileInfo setSignature(String signature) {
     this.signature = signature;
+    return this;
+  }
+
+  public String getContentType() {
+    return contentType;
+  }
+
+  public FileInfo setContentType(String contentType) {
+    this.contentType = contentType;
     return this;
   }
 }
