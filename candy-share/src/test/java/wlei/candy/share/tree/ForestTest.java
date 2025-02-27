@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Author: HeLei
@@ -112,5 +111,24 @@ class ForestTest {
       n.getNode().setParent(null);
       removeKey(n.getChildren());
     }
+  }
+
+  @Test
+  void findOrCreateNode() {
+    Forest<Menu> forest = new Forest<>();
+    assertThrows(IllegalArgumentException.class, forest::findOrCreateNode);
+    TreeNode<Menu> node = forest.findOrCreateNode("A");
+    assertEquals("A", node.getKey());
+    assertEquals(1, forest.size());
+
+    node = forest.findOrCreateNode("B");
+    assertEquals("B", node.getKey());
+    assertEquals(2, forest.size());
+
+    node = forest.findOrCreateNode("A", "AA", "AAA");
+    assertEquals("AAA", node.getKey());
+    assertEquals(2, forest.size());
+
+    assertEquals(4, forest.allNodes().size());
   }
 }

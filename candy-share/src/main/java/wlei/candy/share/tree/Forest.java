@@ -1,5 +1,7 @@
 package wlei.candy.share.tree;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -46,6 +48,53 @@ public class Forest<T extends SelfReference<T>> extends LinkedList<TreeNode<T>> 
       }
       super.add(n);
     }
+  }
+
+  /**
+   * 根据指定路径的key查找或创建节点
+   *
+   * @param keys 层次路径的key
+   * @return 查找到或创建的节点
+   */
+  public TreeNode<T> findOrCreateNode(String... keys) {
+    if (keys.length == 0) {
+      throw new IllegalArgumentException("miss args");
+    }
+    TreeNode<T> current = stream().filter(n -> StringUtils.equals(n.getKey(), keys[0])).findFirst().orElseGet(() -> {
+      TreeNode<T> n = new TreeNode<>();
+      n.setKey(keys[0]);
+      add(n);
+      return n;
+    });
+    for (int i = 1; i < keys.length; i++) {
+      current = findOrCreateChild(current, keys[i]);
+    }
+    return current;
+  }
+
+  /**
+   * 查找当前节点的子节点，如果找到则返回，如果没有找到则创建一个返回
+   *
+   * @param current  当前节点
+   * @param childKey 子节点的key
+   * @return key为childKey的节点
+   */
+  private TreeNode<T> findOrCreateChild(TreeNode<T> current, String childKey) {
+    if (current.getChildren() == null) {
+      current.setChildren(new LinkedList<>());
+    }
+    for (TreeNode<T> child : current.getChildren()) {
+      // 如果找到子节点，直接返回
+      if (StringUtils.equals(childKey, child.getKey())) {
+        return child;
+      }
+    }
+    // 如果没有找到，创建新的子节点
+    TreeNode<T> newChild = new TreeNode<>();
+    newChild.setKey(childKey);
+    current.getChildren().add(newChild);
+    newChild.setParentKey(current.getKey());
+    return newChild;
   }
 
   /**

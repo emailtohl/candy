@@ -40,6 +40,9 @@ public class TreeNode<T extends SelfReference<T>> {
       return;
     }
     for (TreeNode<T> child : children) {
+      if (child.getNode() == null) {
+        continue;
+      }
       if (child.getNode().getParent() == null) {
         child.getNode().setParent(getNode());
       }
