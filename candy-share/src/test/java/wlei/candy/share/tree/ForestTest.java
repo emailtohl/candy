@@ -128,7 +128,15 @@ class ForestTest {
     node = forest.findOrCreateNode("A", "AA", "AAA");
     assertEquals("AAA", node.getKey());
     assertEquals(2, forest.size());
-
     assertEquals(4, forest.allNodes().size());
+
+    assertSame(node, forest.findOrCreateNode("A", "AA", "AAA"));
+    assertEquals(4, forest.allNodes().size());
+
+    node = forest.findOrCreateNode("A", "AA", "AAB");
+    assertEquals("AAB", node.getKey());
+    assertEquals(5, forest.allNodes().size());
+
+    assertNotNull(forest.toString());
   }
 }

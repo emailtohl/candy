@@ -150,4 +150,33 @@ public class Forest<T extends SelfReference<T>> extends LinkedList<TreeNode<T>> 
     }
   }
 
+  public String format() {
+    StringJoiner j = new StringJoiner("");
+    for (TreeNode<T> tn : this) {
+      j.add(preFormat(null, tn));
+    }
+    return j.toString();
+  }
+
+  private String preFormat(String pre, TreeNode<T> tn) {
+    String key;
+    if (StringUtils.isBlank(pre)) {
+      key = tn.getKey();
+    } else {
+      key = String.format("%s.%s", pre, tn.getKey());
+    }
+    StringJoiner j = new StringJoiner("");
+    j.add(String.format("{%s:%s}", key, tn));
+    if (tn.getChildren() != null) {
+      for (TreeNode<T> child : tn.getChildren()) {
+        j.add(preFormat(key, child));
+      }
+    }
+    return j.toString();
+  }
+
+  @Override
+  public String toString() {
+    return format();
+  }
 }
