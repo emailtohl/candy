@@ -1,9 +1,6 @@
 package wlei.candy.jpa.envers;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.util.StringUtils;
@@ -34,6 +31,11 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
 
   @Column(nullable = false)
   private String updateBy;
+
+  // 是否禁用自动记录创建人、更新人、更新时间
+  // 在手动记录创建人、更新人、更新时间时，让其为true
+  @Transient
+  private transient boolean closeBeforeUpdate;
 
   public UsualAuditableEntity() {
   }
@@ -97,11 +99,19 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
     return (A) this;
   }
 
+  public final boolean isCloseBeforeUpdate() {
+    return closeBeforeUpdate;
+  }
+
+  public final void setCloseBeforeUpdate(boolean closeBeforeUpdate) {
+    this.closeBeforeUpdate = closeBeforeUpdate;
+  }
+
   /**
-   * 保存前处理
+   * 保存前，确保创建人、更新人、更新时间不能为空
    */
   @PrePersist
-  void beforeCreate() {
+  final void beforeCreate() {
     if (getUpdateTime() == null) {
       if (getCreateTime() != null) {
         setUpdateTime(getCreateTime());
@@ -121,12 +131,11 @@ public class UsualAuditableEntity<A extends UsualAuditableEntity<A>> extends Usu
    * 更新前处理
    */
   @PreUpdate
-  void beforeUpdate() {
-    if (getUpdateTime() == null) {
-      setUpdateTime(LocalDateTime.now());
+  final void beforeUpdate() {
+    if (this.closeBeforeUpdate) {
+      return;
     }
-    if (!StringUtils.hasText(getUpdateBy())) {
-      setUpdateBy(CurrentUserInfoFactory.get().username());
-    }
+    setUpdateTime(LocalDateTime.now());
+    setUpdateBy(CurrentUserInfoFactory.get().username());
   }
 }

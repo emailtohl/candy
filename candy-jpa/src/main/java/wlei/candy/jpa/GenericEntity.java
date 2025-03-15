@@ -131,7 +131,7 @@ public abstract class GenericEntity<I extends Serializable, E extends GenericEnt
   }
 
   /**
-   * 保存前处理
+   * 保存前，如果创建时间为空，那就将创建时间设置为当前时间
    * final修饰符，保证不被子类覆盖，否则确实创建时间
    */
   @PrePersist

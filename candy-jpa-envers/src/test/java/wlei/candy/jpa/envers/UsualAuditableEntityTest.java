@@ -97,6 +97,21 @@ class UsualAuditableEntityTest {
     assertTrue(timeEquals(item.getUpdateTime(), now));
   }
 
+  @Test
+  void closeBeforeUpdate() {
+    SomeEntity e = new SomeEntity();
+    e.setCloseBeforeUpdate(true);
+    assertTrue(e.isCloseBeforeUpdate());
+    LocalDateTime now = LocalDateTime.of(2025, 3, 15, 21, 41, 50);
+    e.setUpdateBy("uuu");
+    e.setUpdateTime(now);
+    e.setCreateBy("www");
+    e.beforeUpdate();
+    assertEquals(now, e.getUpdateTime());
+    assertEquals("uuu", e.getUpdateBy());
+    assertEquals("www", e.getCreateBy());
+  }
+
   private boolean timeEquals(LocalDateTime d1, LocalDateTime d2) {
     String sd1 = d1.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).substring(0, 19);
     String sd2 = d2.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).substring(0, 19);
